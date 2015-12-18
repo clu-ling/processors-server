@@ -1,4 +1,4 @@
-name := "processors-service"
+name := "processors-server"
 
 version := "1.0"
 
@@ -34,4 +34,16 @@ libraryDependencies ++= {
     "org.clulab"          %%  "processors"     % "5.7.2",
     "org.clulab"          %%  "processors"     % "5.7.2" classifier "models"
   )
+}
+
+assemblyJarName := { s"processors-server.jar" }
+
+assemblyExcludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
+  cp filter {x => x.data.getName.matches("sbt.*") || x.data.getName.matches(".*macros.*")}
+}
+
+assemblyMergeStrategy in assembly := {
+  case "application.conf"                           => MergeStrategy.concat
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
 }
