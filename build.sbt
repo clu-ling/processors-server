@@ -43,7 +43,9 @@ assemblyExcludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
 }
 
 assemblyMergeStrategy in assembly := {
-  case "application.conf"                           => MergeStrategy.concat
+  case "application.conf" => MergeStrategy.concat
+  // Gets rid of ${spray.version} error
+  case "reference.conf" => MergeStrategy.concat
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x => MergeStrategy.first
 }
