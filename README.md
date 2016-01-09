@@ -4,13 +4,24 @@ A [`spray`](spray.io) server exposing a REST API for text annotation via the [`p
 ## How is this useful?
 This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently the only service uses `processors`' `FastNLPProcessor`, a wrapper for `CoreNLP`.
 
-## An example using `cURL`
 
-1. Start the server.  
-```sbt "runMain NLPServer"```
-This may a minute as several large models files are loaded
+## Running `processors-server`
 
-2. POST `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:  
+```
+git clone https://github.com/myedibleenso/processors-server.git
+```
+Fire up the server.
+```
+cd processors-server
+sbt "runMain NLPServer"
+```
+It may take a minute or so to load the large model files.
+
+## Communicating with the server
+
+### An example using `cURL`
+
+POST `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:  
 ```curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/parse```
 
 ```
