@@ -26,14 +26,14 @@ sbt "runMain NLPServer myfavoriteport"
 
 
 # Communicating with the server
-
+The examples that follow assume you started the server on port `8888`.
 
 ## Annotating text
 
 ### An example using `cURL`
 
 POST `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:  
-```curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/parse```
+```curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/annotate```
 
 ```
 {
