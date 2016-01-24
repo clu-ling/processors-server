@@ -10,14 +10,25 @@ This might be useful to people wanting to do NLP in a non-`JVM` language without
 ```
 git clone https://github.com/myedibleenso/processors-server.git
 ```
-Fire up the server.
+
+Fire up the server.  This may take a minute or so to load the large model files.
+
 ```
 cd processors-server
 sbt "runMain NLPServer"
 ```
-It may take a minute or so to load the large model files.
 
-## Communicating with the server
+By default, the server will run on port `8888`, though you can start the server using a different port:
+
+```
+sbt "runMain NLPServer myfavoriteport"
+```
+
+
+# Communicating with the server
+
+
+## Annotating text
 
 ### An example using `cURL`
 
@@ -188,7 +199,15 @@ POST `json` using `cuRL`.  The text to parse should be given as the value of the
 }
 ```
 
-## Future Plans
+## Shutting down the server
+
+You can shut down the server by posting anything to `/shutdown`
+
+## Checking on server's status
+
+send a `GET` to `/status`
+
+# Future Plans
 - Add service for `BioNLPProcessor`
 - Offer fat `jar` + `Python` library
 - Add service for running rule-based [`odin` rule-based ie](http://arxiv.org/pdf/1509.07513v1.pdf) on some built-in grammars
