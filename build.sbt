@@ -31,8 +31,8 @@ libraryDependencies ++= {
     "com.typesafe.akka"   %%  "akka-actor"     % akkaV,
     "com.typesafe.akka"   %%  "akka-testkit"   % akkaV    % "test",
     "org.specs2"          %%  "specs2-core"    % "2.3.11" % "test",
-    "org.clulab"          %%  "processors"     % "5.7.2",
-    "org.clulab"          %%  "processors"     % "5.7.2" classifier "models"
+    "org.clulab"          %%  "processors"     % "5.8.0",
+    "org.clulab"          %%  "processors"     % "5.8.0" classifier "models"
   )
 }
 
