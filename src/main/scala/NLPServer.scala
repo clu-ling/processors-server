@@ -41,7 +41,7 @@ object NLPServer extends App with SimpleRoutingApp {
 
   // pre-load models before taking requests
   TextProcessor.proc.annotate("blah")
-  implicit val system = ActorSystem("parser-courier")
+  implicit val system = ActorSystem("processors-courier")
 
   import MessageProtocol._
 
@@ -63,7 +63,7 @@ object NLPServer extends App with SimpleRoutingApp {
       }
     } ~
     post {
-      path("parse") {
+      path("annotate") {
         entity(as[Message]) { m =>
           println(s"Received POST with text -> ${m.text}")
           val doc = TextProcessor.toAnnotatedDocument(m.text)
