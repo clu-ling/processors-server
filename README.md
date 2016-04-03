@@ -7,20 +7,20 @@ This might be useful to people wanting to do NLP in a non-`JVM` language without
 
 ## Running `processors-server`
 
-```
+```bash
 git clone https://github.com/myedibleenso/processors-server.git
 ```
 
 Fire up the server.  This may take a minute or so to load the large model files.
 
-```
+```bash
 cd processors-server
 sbt "runMain NLPServer"
 ```
 
 By default, the server will run on port `8888`, though you can start the server using a different port:
 
-```
+```bash
 sbt "runMain NLPServer myfavoriteport"
 ```
 
@@ -33,9 +33,11 @@ The examples that follow assume you started the server on port `8888`.
 ### An example using `cURL`
 
 POST `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:  
-```curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/annotate```
-
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/annotate
 ```
+
+```json
 {
   "text": "My name is Inigo Montoya. You killed my father. Prepare to die.",
   "sentences": {
