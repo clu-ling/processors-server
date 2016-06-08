@@ -1,5 +1,7 @@
 package processors
 
+import edu.arizona.sista.processors.Processor
+import edu.arizona.sista.processors.bionlp.BioNLPProcessor
 import edu.arizona.sista.processors.fastnlp.FastNLPProcessor
 import org.json4s._
 import org.json4s.JsonDSL._
@@ -20,9 +22,14 @@ case class Document(text: String, sentences: Map[Int, Sentence])
 
 object TextProcessor {
   // initialize a processor
-  val proc = new FastNLPProcessor()
+  lazy val fastnlp = new FastNLPProcessor()
+  lazy val bionlp = new BioNLPProcessor()
+
+  def annotateWithFastNLP(text: String): Document = toAnnotatedDocument(text, fastnlp)
+  def annotateWithBioNLP(text: String): Document = toAnnotatedDocument(text, bionlp)
+
   // convert processors document to a json-serializable format
-  def toAnnotatedDocument(text: String): Document = {
+  def toAnnotatedDocument(text: String, proc: Processor): Document = {
     val doc = proc.annotate(text)
     val sentencePairs =
       for {(s, i) <- doc.sentences.zipWithIndex
@@ -38,8 +45,12 @@ object TextProcessor {
     Document(text, sentencePairs.toMap)
   }
 
-  def textToJSON(text: String): JValue = {
-    val doc = toAnnotatedDocument(text)
+//  def textToJSON(text: String): JValue =
+//    docToJSON(
+//      annotateWithFastNLP(text)
+//    )
+
+  def docToJSON(doc: Document): JValue = {
     implicit val formats = Serialization.formats(NoTypeHints)
     val json = write(doc)
     json

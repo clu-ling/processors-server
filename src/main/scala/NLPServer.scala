@@ -40,7 +40,9 @@ object NLPServer extends App with SimpleRoutingApp {
     }
 
   // pre-load models before taking requests
-  TextProcessor.proc.annotate("blah")
+  TextProcessor.annotateWithFastNLP("blah")
+  TextProcessor.annotateWithBioNLP("blah")
+
   implicit val system = ActorSystem("processors-courier")
 
   import MessageProtocol._
@@ -65,8 +67,24 @@ object NLPServer extends App with SimpleRoutingApp {
     post {
       path("annotate") {
         entity(as[Message]) { m =>
-          println(s"Received POST with text -> ${m.text}")
-          val doc = TextProcessor.toAnnotatedDocument(m.text)
+          println(s"Default Processor received POST with text -> ${m.text}")
+          val doc = TextProcessor.annotateWithFastNLP(m.text)
+          // case class is implicitly converted to json
+          complete(doc)
+        }
+      } ~
+      path("fastnlp" / "annotate") {
+        entity(as[Message]) { m =>
+          println(s"FastNLPProcessor received POST with text -> ${m.text}")
+          val doc = TextProcessor.annotateWithFastNLP(m.text)
+          // case class is implicitly converted to json
+          complete(doc)
+        }
+      } ~
+      path("bionlp" / "annotate") {
+        entity(as[Message]) { m =>
+          println(s"BioNLPProcessor received POST with text -> ${m.text}")
+          val doc = TextProcessor.annotateWithBioNLP(m.text)
           // case class is implicitly converted to json
           complete(doc)
         }
