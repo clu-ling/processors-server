@@ -226,16 +226,7 @@ send a `GET` to `/status`
 If you're a Python user, you may be interested in using [`py-processors`](https://github.com/myedibleenso/py-processors) in your NLP project.
 
 # Where can I get the latest and greatest fat `jar`?
-Cloning the project and running `sbt assembly` ensures the latest `jar`.  You can download a recent tub-of-`jar` using one of these commands:
-
-```bash
-wget http://www.cs.arizona.edu/~hahnpowell/processors-server/current/processors-server.jar
-```
-or
-
-```bash
-curl -H "Accept: application/zip" http://www.cs.arizona.edu/~hahnpowell/processors-server/current/processors-server.jar -o processors-server.jar
-```
+Cloning the project and running `sbt assembly` ensures the latest `jar`.  You can download a recent tub-of-`jar` [here](http://www.cs.arizona.edu/~hahnpowell/processors-server/current/processors-server.jar).
 
 # Future Plans
 - Add service for running rule-based [`odin` rule-based ie](http://arxiv.org/pdf/1509.07513v1.pdf) on some built-in grammars
