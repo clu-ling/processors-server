@@ -9,12 +9,12 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization.{write, writePretty}
 
 case class Sentence(
-              words: List[String],
-              lemmas: List[String],
-              tags:List[String],
-              entities: List[String],
-              dependencies: List[Map[String, Any]]
-                     )
+  words: List[String],
+  lemmas: List[String],
+  tags:List[String],
+  entities: List[String],
+  dependencies: List[Map[String, Any]]
+)
 
 // storage class (mirrors the Document class in Processors) for the annotated text.
 // this will be dumped to json

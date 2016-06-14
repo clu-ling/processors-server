@@ -1,6 +1,6 @@
 name := "processors-server"
 
-version := "1.0"
+version := "2.0"
 
 scalaVersion := "2.11.6"
 
@@ -13,7 +13,7 @@ connectInput in run := true
 // don't show output prefix
 outputStrategy := Some(StdoutOutput)
 
-organization  := "myedibleenso.org"
+organization  := "myedibleenso"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
