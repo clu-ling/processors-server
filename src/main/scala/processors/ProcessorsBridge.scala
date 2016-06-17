@@ -1,5 +1,7 @@
 package processors
 
+import _root_.processors.api.SentimentScores
+import edu.arizona.sista.processors
 import edu.arizona.sista.processors.Processor
 import edu.arizona.sista.processors.corenlp.CoreNLPSentimentAnalyzer
 import edu.arizona.sista.processors.bionlp.BioNLPProcessor
@@ -32,19 +34,18 @@ object ProcessorsBridge {
     api.Document(text, sentences)
   }
 
-//  def textToJSON(text: String): JValue =
-//    docToJSON(
-//      annotateWithFastNLP(text)
-//    )
-
-  def docToJSON(doc: Document): JValue = {
-    implicit val formats = Serialization.formats(NoTypeHints)
-    val json = write(doc)
-    json
-  }
-
   def toSentimentScores(text: String): SentimentScores = {
     val scores = CoreNLPSentimentAnalyzer.sentiment(text)
+    SentimentScores(scores)
+  }
+
+  def toSentimentScores(sentence: processors.Sentence): SentimentScores = {
+    val score = CoreNLPSentimentAnalyzer.sentiment(sentence)
+    SentimentScores(Seq(score))
+  }
+
+  def toSentimentScores(doc: processors.Document): SentimentScores = {
+    val scores = CoreNLPSentimentAnalyzer.sentiment(doc)
     SentimentScores(scores)
   }
 }

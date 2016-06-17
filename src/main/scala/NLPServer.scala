@@ -94,6 +94,32 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
           complete(doc)
         }
       } ~
+      // Handle sentiment analysis of text
+      path("corenlp" / "sentiment" / "text") {
+        entity(as[Message]) { m =>
+          logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
+          val scores = ProcessorsBridge.toSentimentScores(m.text)
+          complete(scores)
+        }
+      } ~
+      // Handle sentiment analysis of a Sentence
+      path("corenlp" / "sentiment" / "sentence") {
+        entity(as[api.Sentence]) { s =>
+          logger.info(s"CoreNLPSentimentAnalyzer received Sentence in POST with text -> ${s.words.mkString(" ")}")
+          val sentence = ConverterUtils.toProcessorsSentence(s)
+          val scores = ProcessorsBridge.toSentimentScores(sentence)
+          complete(scores)
+        }
+      } ~
+      // Handle sentiment analysis of a Document
+      path("corenlp" / "sentiment" / "document") {
+        entity(as[api.Document]) { doc =>
+          logger.info(s"CoreNLPSentimentAnalyzer received Document in POST with text -> ${doc.text}")
+          val document = ConverterUtils.toProcessorsDocument(doc)
+          val scores = ProcessorsBridge.toSentimentScores(document)
+          complete(scores)
+        }
+      } ~
       // shuts down the server
       path("shutdown") {
         complete {
