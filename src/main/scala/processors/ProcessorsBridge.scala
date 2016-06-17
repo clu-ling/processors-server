@@ -1,6 +1,7 @@
 package processors
 
 import edu.arizona.sista.processors.Processor
+import edu.arizona.sista.processors.corenlp.CoreNLPSentimentAnalyzer
 import edu.arizona.sista.processors.bionlp.BioNLPProcessor
 import edu.arizona.sista.processors.fastnlp.FastNLPProcessor
 import org.json4s._
@@ -8,19 +9,9 @@ import org.json4s.JsonDSL._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.{write, writePretty}
 
-case class Sentence(
-  words: List[String],
-  lemmas: List[String],
-  tags:List[String],
-  entities: List[String],
-  dependencies: List[Map[String, Any]]
-)
-
-// storage class (mirrors the Document class in Processors) for the annotated text.
-// this will be dumped to json
-case class Document(text: String, sentences: Map[Int, Sentence])
 
 object TextProcessor {
+
   // initialize a processor
   lazy val fastnlp = new FastNLPProcessor()
   lazy val bionlp = new BioNLPProcessor()
@@ -39,7 +30,12 @@ object TextProcessor {
            entities = s.entities.get
            // reformatting the dependencies as a List of maps results in a more readable json output
            deps = s.dependencies.get.allEdges().map {
-             case (i:Int, o:Int, rel: String) => Map("incoming"->i,"outgoing" -> o, "relation" -> rel)
+             case (i:Int, o:Int, rel: String) =>
+               Map(
+                 "incoming" -> i,
+                 "outgoing" -> o,
+                 "relation" -> rel
+               )
            }
       } yield (i + 1, Sentence(words.toList, lemmas.toList, tags.toList, entities.toList, deps))
     Document(text, sentencePairs.toMap)
@@ -54,5 +50,10 @@ object TextProcessor {
     implicit val formats = Serialization.formats(NoTypeHints)
     val json = write(doc)
     json
+  }
+
+  def toSentimentScores(text: String): SentimentScores = {
+    val scores = CoreNLPSentimentAnalyzer.sentiment(text)
+    SentimentScores(scores)
   }
 }
