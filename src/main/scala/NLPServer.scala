@@ -3,29 +3,26 @@ import org.json4s.{Formats, DefaultFormats}
 import processors.api
 import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
-import spray.httpx.Json4sSupport
 import akka.actor.ActorSystem
 import scala.util.{Failure, Success}
 import processors._
-
 import scala.concurrent.duration._
 import akka.pattern.ask
 import spray.can.server.Stats
 import spray.can.Http
 import spray.httpx.marshalling.Marshaller
+import spray.httpx.Json4sSupport
 import spray.util._
 
-// for handling incoming json containing the "text" field
+// for handling incoming json
 object MessageProtocol extends Json4sSupport {
 
   override implicit def json4sFormats: Formats = DefaultFormats
 
-  case class Message(text: String)
-
 }
 
 /**
- *
+ * Spray server for NLP (bridge to processors library)
  */
 object NLPServer extends App with SimpleRoutingApp with LazyLogging {
 
@@ -71,32 +68,32 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
     post {
       // Handle parsing, etc
       path("annotate") {
-        entity(as[Message]) { m =>
+        entity(as[api.TextMessage]) { m =>
           logger.info(s"Default Processor received POST with text -> ${m.text}")
-          val doc = ProcessorsBridge.annotateWithFastNLP(m.text)
-          // case class is implicitly converted to json
+          val processorsDoc = ProcessorsBridge.annotate(m.text)
+          val doc = ConverterUtils.toDocument(processorsDoc)
           complete(doc)
         }
       } ~
       path("fastnlp" / "annotate") {
-        entity(as[Message]) { m =>
+        entity(as[api.TextMessage]) { m =>
           logger.info(s"FastNLPProcessor received POST with text -> ${m.text}")
-          val doc = ProcessorsBridge.annotateWithFastNLP(m.text)
-          // case class is implicitly converted to json
+          val processorsDoc = ProcessorsBridge.annotateWithFastNLP(m.text)
+          val doc = ConverterUtils.toDocument(processorsDoc)
           complete(doc)
         }
       } ~
       path("bionlp" / "annotate") {
-        entity(as[Message]) { m =>
+        entity(as[api.TextMessage]) { m =>
           logger.info(s"BioNLPProcessor received POST with text -> ${m.text}")
-          val doc = ProcessorsBridge.annotateWithBioNLP(m.text)
-          // case class is implicitly converted to json
+          val processorsDoc = ProcessorsBridge.annotateWithBioNLP(m.text)
+          val doc = ConverterUtils.toDocument(processorsDoc)
           complete(doc)
         }
       } ~
       // Handle sentiment analysis of text
       path("corenlp" / "sentiment" / "text") {
-        entity(as[Message]) { m =>
+        entity(as[api.TextMessage]) { m =>
           logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
           val scores = ProcessorsBridge.toSentimentScores(m.text)
           complete(scores)
