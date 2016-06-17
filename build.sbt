@@ -1,11 +1,16 @@
 name := "processors-server"
 
-version := "2.2"
+version := "2.3"
 
 scalaVersion := "2.11.6"
 
 // options for forked jvm
 javaOptions += "-Xmx3G"
+
+// CoreNLP requires Java 8, so there's no point in compiling for 7
+//scalacOptions += "-target:jvm-1.7" // "-target:jvm-1.8"
+//
+//javacOptions in compile ++= Seq("-source", "1.7", "-target", "1.7")
 
 // forward sbt's stdin to forked process
 connectInput in run := true
@@ -29,6 +34,7 @@ libraryDependencies ++= {
     "io.spray"            %%  "spray-can"      % sprayV,
     "io.spray"            %%  "spray-routing"  % sprayV,
     "io.spray"            %%  "spray-client"   % sprayV,
+    //"io.spray"            %%  "spray-json"     % sprayV,
     "org.json4s"          %%  "json4s-native"  % json4sV,
     "org.json4s"          %%  "json4s-jackson" % json4sV,
     "io.spray"            %%  "spray-testkit"  % sprayV   % "test",
