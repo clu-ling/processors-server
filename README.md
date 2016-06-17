@@ -25,13 +25,12 @@ sbt "runMain NLPServer <your favorite port here>"
 ```
 
 # Communicating with the server
-The examples that follow assume you started the server on port `8888`.
 
 ## Annotating text
 
 ### Available services
 
-Text can be annotated by posting `json` with a `"text"` field to one of the following services.
+Text can be annotated by posting `json` with a `"text"` field to one of the following services  (see [example](src/main/resources/json/examples/message.json)).
 
 #### `FastNLPProcessor`
 
@@ -42,6 +41,18 @@ Text can be annotated by posting `json` with a `"text"` field to one of the foll
 
 - `http://localhost:<your port here>/bionlp/annotate`
 
+#### Sentiment analysis with `CoreNLP`
+
+- `http://localhost:<your port here>/corenlp/sentiment/document`
+  - Requires a `json` request containing a [`Document`](src/main/resources/json/schema/document.json) (see [example](src/main/resources/json/examples/document.json))
+- `http://localhost:<your port here>/corenlp/sentiment/sentence`
+  - Requires a `json` request containing a [`Sentence`](src/main/resources/json/schema/sentence.json) (see [example](src/main/resources/json/examples/sentence.json))
+- `http://localhost:<your port here>/corenlp/sentiment/text`
+  - Requires a `json` request containing a [`Message`](src/main/resources/json/schema/message.json) (see [example](src/main/resources/json/examples/message.json))
+
+# Responses
+
+The a POST to a `/annotate` endpoint will return a `json Document` of the form specified in [`document.json`](src/main/resources/json/schema.document.json).
 
 ### An example using `cURL`
 
@@ -53,8 +64,8 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
 ```json
 {
   "text": "My name is Inigo Montoya. You killed my father. Prepare to die.",
-  "sentences": {
-    "1": {
+  "sentences": [
+    {
       "words": [
         "My",
         "name",
@@ -62,6 +73,22 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
         "Inigo",
         "Montoya",
         "."
+      ],
+      "startOffsets": [
+        0,
+        3,
+        8,
+        11,
+        17,
+        24
+      ],
+      "endOffsets": [
+        2,
+        7,
+        10,
+        16,
+        24,
+        25
       ],
       "lemmas": [
         "my",
@@ -87,41 +114,60 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
         "PERSON",
         "O"
       ],
-      "dependencies": [
-        {
-          "incoming": 1,
-          "outgoing": 0,
-          "relation": "poss"
-        },
-        {
-          "incoming": 4,
-          "outgoing": 1,
-          "relation": "nsubj"
-        },
-        {
-          "incoming": 4,
-          "outgoing": 2,
-          "relation": "cop"
-        },
-        {
-          "incoming": 4,
-          "outgoing": 3,
-          "relation": "nn"
-        },
-        {
-          "incoming": 4,
-          "outgoing": 5,
-          "relation": "punct"
-        }
-      ]
+      "dependencies": {
+        "edges": [
+          {
+            "destination": 0,
+            "source": 1,
+            "relation": "poss"
+          },
+          {
+            "destination": 1,
+            "source": 4,
+            "relation": "nsubj"
+          },
+          {
+            "destination": 2,
+            "source": 4,
+            "relation": "cop"
+          },
+          {
+            "destination": 3,
+            "source": 4,
+            "relation": "nn"
+          },
+          {
+            "destination": 5,
+            "source": 4,
+            "relation": "punct"
+          }
+        ],
+        "roots": [
+          4
+        ]
+      }
     },
-    "2": {
+    {
       "words": [
         "You",
         "killed",
         "my",
         "father",
         "."
+      ],
+      "startOffsets": [
+        26,
+        30,
+        37,
+        40,
+        46
+      ],
+      "endOffsets": [
+        29,
+        36,
+        39,
+        46,
+        47
       ],
       "lemmas": [
         "you",
@@ -144,35 +190,52 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
         "O",
         "O"
       ],
-      "dependencies": [
-        {
-          "incoming": 3,
-          "outgoing": 2,
-          "relation": "poss"
-        },
-        {
-          "incoming": 1,
-          "outgoing": 3,
-          "relation": "dobj"
-        },
-        {
-          "incoming": 1,
-          "outgoing": 4,
-          "relation": "punct"
-        },
-        {
-          "incoming": 1,
-          "outgoing": 0,
-          "relation": "nsubj"
-        }
-      ]
+      "dependencies": {
+        "edges": [
+          {
+            "destination": 2,
+            "source": 3,
+            "relation": "poss"
+          },
+          {
+            "destination": 3,
+            "source": 1,
+            "relation": "dobj"
+          },
+          {
+            "destination": 4,
+            "source": 1,
+            "relation": "punct"
+          },
+          {
+            "destination": 0,
+            "source": 1,
+            "relation": "nsubj"
+          }
+        ],
+        "roots": [
+          1
+        ]
+      }
     },
-    "3": {
+    {
       "words": [
         "Prepare",
         "to",
         "die",
         "."
+      ],
+      "startOffsets": [
+        48,
+        56,
+        59,
+        62
+      ],
+      "endOffsets": [
+        55,
+        58,
+        62,
+        63
       ],
       "lemmas": [
         "prepare",
@@ -192,27 +255,39 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
         "O",
         "O"
       ],
-      "dependencies": [
-        {
-          "incoming": 0,
-          "outgoing": 2,
-          "relation": "xcomp"
-        },
-        {
-          "incoming": 0,
-          "outgoing": 3,
-          "relation": "punct"
-        },
-        {
-          "incoming": 2,
-          "outgoing": 1,
-          "relation": "aux"
-        }
-      ]
+      "dependencies": {
+        "edges": [
+          {
+            "destination": 2,
+            "source": 0,
+            "relation": "xcomp"
+          },
+          {
+            "destination": 3,
+            "source": 0,
+            "relation": "punct"
+          },
+          {
+            "destination": 1,
+            "source": 2,
+            "relation": "aux"
+          }
+        ],
+        "roots": [
+          0
+        ]
+      }
     }
-  }
+  ]
 }
 ```
+
+# `json` schema for responses
+
+Response schema can be found at (`src/main/resources/json/schema`)[src/main/resources/json/schema]
+
+Examples of each can be found at (`src/main/resources/json/examples`)[src/main/resources/json/examples]
+
 
 ## Shutting down the server
 
