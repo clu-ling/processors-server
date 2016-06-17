@@ -1,7 +1,10 @@
 package processors
 
 import _root_.processors.api.{Edge, Dependencies}
+import edu.arizona.sista.odin.{TextBoundMention, EventMention, RelationMention}
 import edu.arizona.sista.processors
+import edu.arizona.sista.struct.Interval
+import edu.arizona.sista.odin
 import edu.arizona.sista.processors.DependencyMap
 import edu.arizona.sista.struct.DirectedGraph
 
@@ -31,7 +34,7 @@ object ConverterUtils {
   }
 
   def toProcessorsSentence(s: api.Sentence): processors.Sentence = {
-    
+
     new processors.Sentence(
       s.words.toArray,
       startOffsets = s.startOffsets.toArray,
@@ -70,4 +73,90 @@ object ConverterUtils {
     api.Document(text, sentences)
   }
 
+  def toMention(mention: odin.Mention): api.Mention = mention match {
+
+    case tb: odin.TextBoundMention =>
+      api.Mention(
+        label = tb.label,
+        labels = tb.labels.toSet,
+        arguments = Map.empty[String, Seq[api.Mention]],
+        trigger = None,
+        start = tb.tokenInterval.start,
+        end = tb.tokenInterval.end,
+        sentence = tb.sentence,
+        document = toDocument(tb.document),
+        keep = tb.keep,
+        foundBy = tb.foundBy
+      )
+
+    case em: odin.EventMention =>
+      api.Mention(
+        label = em.label,
+        labels = em.labels.toSet,
+        arguments = toArguments(em.arguments),
+        trigger = Some(toMention(em.trigger)),
+        start = em.tokenInterval.start,
+        end = em.tokenInterval.end,
+        sentence = em.sentence,
+        document = toDocument(em.document),
+        keep = em.keep,
+        foundBy = em.foundBy
+      )
+
+    case rel: odin.RelationMention =>
+      api.Mention(
+        label = rel.label,
+        labels = rel.labels.toSet,
+        arguments = toArguments(rel.arguments),
+        trigger = None,
+        start = rel.tokenInterval.start,
+        end = rel.tokenInterval.end,
+        sentence = rel.sentence,
+        document = toDocument(rel.document),
+        keep = rel.keep,
+        foundBy = rel.foundBy
+      )
+  }
+
+  def toOdinMention(mention: api.Mention): odin.Mention = mention match {
+
+    case tb if tb.arguments.isEmpty && tb.trigger.isEmpty =>
+      new TextBoundMention(
+        labels = tb.labels.toSeq,
+        tokenInterval = Interval(tb.start, tb.end),
+        sentence = tb.sentence,
+        document = toProcessorsDocument(tb.document),
+        keep = tb.keep,
+        foundBy = tb.foundBy
+      )
+
+    case em if em.arguments.nonEmpty && em.trigger.isDefined =>
+      new EventMention(
+        labels = em.labels.toSeq,
+        trigger = toOdinMention(em.trigger.get).asInstanceOf[TextBoundMention],
+        arguments = toOdinArguments(em.arguments),
+        sentence = em.sentence,
+        document = toProcessorsDocument(em.document),
+        keep = em.keep,
+        foundBy = em.foundBy
+      )
+
+    case rel if rel.arguments.nonEmpty && rel.trigger.isEmpty =>
+      new RelationMention(
+        labels = rel.labels.toSeq,
+        arguments = toOdinArguments(rel.arguments),
+        sentence = rel.sentence,
+        document = toProcessorsDocument(rel.document),
+        keep = rel.keep,
+        foundBy = rel.foundBy
+      )
+  }
+
+  def toArguments(arguments: Map[String, Seq[odin.Mention]]): Map[String, Seq[api.Mention]] = {
+    arguments.mapValues(_.map(toMention))
+  }
+
+  def toOdinArguments(arguments: Map[String, Seq[api.Mention]]): Map[String, Seq[odin.Mention]] = {
+    arguments.mapValues(_.map(toOdinMention))
+  }
 }

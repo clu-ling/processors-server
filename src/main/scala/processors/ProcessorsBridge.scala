@@ -1,6 +1,7 @@
 package processors
 
 import _root_.processors.api.SentimentScores
+import edu.arizona.sista.odin.ExtractorEngine
 import edu.arizona.sista.processors
 import edu.arizona.sista.processors.Processor
 import edu.arizona.sista.processors.corenlp.CoreNLPSentimentAnalyzer
@@ -38,5 +39,16 @@ object ProcessorsBridge {
   def toSentimentScores(doc: processors.Document): SentimentScores = {
     val scores = CoreNLPSentimentAnalyzer.sentiment(doc)
     SentimentScores(scores)
+  }
+
+  def getMentions(doc: processors.Document, rules: String): Seq[api.Mention] = {
+    val engine = ExtractorEngine(rules)
+    val odinMentions = engine.extractFrom(doc)
+
+    val mentions = for {
+      om <- odinMentions
+    } yield ConverterUtils.toMention(om)
+
+    mentions
   }
 }

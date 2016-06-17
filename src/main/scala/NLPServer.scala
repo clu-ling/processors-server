@@ -117,6 +117,23 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
           complete(scores)
         }
       } ~
+      // Handle IE with Odin
+      path("odin" / "extract" / "document" ) {
+        entity(as[api.DocumentIEMessage]) { iem =>
+          logger.info(s"Odin message received")
+          val document = ConverterUtils.toProcessorsDocument(iem.document)
+          val mentions = ProcessorsBridge.getMentions(document, iem.rules)
+          complete(mentions)
+        }
+      } ~
+      path("odin" / "extract" / "text" ) {
+        entity(as[api.TextIEMessage]) { iem =>
+          logger.info(s"Odin message received")
+          val document = ProcessorsBridge.annotateWithFastNLP(iem.text)
+          val mentions = ProcessorsBridge.getMentions(document, iem.rules)
+          complete(mentions)
+        }
+      } ~
       // shuts down the server
       path("shutdown") {
         complete {
