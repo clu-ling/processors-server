@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "id": "https://github.com/myedibleenso/processors-server/tree/master/src/main/resources/json/schema/sentence.json",
+  "properties": {
+    "words": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "words"
+    },
+    "startOffsets": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "id": "startOffsets"
+    },
+    "endOffsets": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "id": "endOffsets"
+    },
+    "lemmas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "lemmas"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "tags"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "entities"
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "destination": {
+                "type": "integer",
+                "id": "destination"
+              },
+              "source": {
+                "type": "integer",
+                "id": "source"
+              },
+              "relation": {
+                "type": "string",
+                "id": "relation"
+              }
+            },
+            "id": "9"
+          },
+          "id": "edges"
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "id": "roots"
+        }
+      },
+      "id": "dependencies"
+    }
+  }
+}
