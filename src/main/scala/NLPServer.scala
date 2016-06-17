@@ -1,4 +1,6 @@
+import com.typesafe.scalalogging.LazyLogging
 import org.json4s.{Formats, DefaultFormats}
+import processors.api
 import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
 import spray.httpx.Json4sSupport
@@ -25,7 +27,9 @@ object MessageProtocol extends Json4sSupport {
 /**
  *
  */
-object NLPServer extends App with SimpleRoutingApp {
+object NLPServer extends App with SimpleRoutingApp with LazyLogging {
+
+  val defaultPort = 8888
 
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
@@ -40,8 +44,8 @@ object NLPServer extends App with SimpleRoutingApp {
     }
 
   // pre-load models before taking requests
-  TextProcessor.annotateWithFastNLP("blah")
-  TextProcessor.annotateWithBioNLP("blah")
+  ProcessorsBridge.annotateWithFastNLP("blah")
+  ProcessorsBridge.annotateWithBioNLP("blah")
 
   implicit val system = ActorSystem("processors-courier")
 
@@ -53,7 +57,7 @@ object NLPServer extends App with SimpleRoutingApp {
   def in[U](duration: FiniteDuration)(body: => U): Unit =
     system.scheduler.scheduleOnce(duration)(body)
 
-  val p: Int = if (args.nonEmpty) args(0).toInt else 8888
+  val p: Int = if (args.nonEmpty) args(0).toInt else defaultPort
   startServer(interface = "localhost", port = p) {
     get {
       path("status") {
@@ -65,26 +69,27 @@ object NLPServer extends App with SimpleRoutingApp {
       }
     } ~
     post {
+      // Handle parsing, etc
       path("annotate") {
         entity(as[Message]) { m =>
-          println(s"Default Processor received POST with text -> ${m.text}")
-          val doc = TextProcessor.annotateWithFastNLP(m.text)
+          logger.info(s"Default Processor received POST with text -> ${m.text}")
+          val doc = ProcessorsBridge.annotateWithFastNLP(m.text)
           // case class is implicitly converted to json
           complete(doc)
         }
       } ~
       path("fastnlp" / "annotate") {
         entity(as[Message]) { m =>
-          println(s"FastNLPProcessor received POST with text -> ${m.text}")
-          val doc = TextProcessor.annotateWithFastNLP(m.text)
+          logger.info(s"FastNLPProcessor received POST with text -> ${m.text}")
+          val doc = ProcessorsBridge.annotateWithFastNLP(m.text)
           // case class is implicitly converted to json
           complete(doc)
         }
       } ~
       path("bionlp" / "annotate") {
         entity(as[Message]) { m =>
-          println(s"BioNLPProcessor received POST with text -> ${m.text}")
-          val doc = TextProcessor.annotateWithBioNLP(m.text)
+          logger.info(s"BioNLPProcessor received POST with text -> ${m.text}")
+          val doc = ProcessorsBridge.annotateWithBioNLP(m.text)
           // case class is implicitly converted to json
           complete(doc)
         }
