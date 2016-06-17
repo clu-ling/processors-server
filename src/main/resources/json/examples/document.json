@@ -1,0 +1,142 @@
+{
+  "text": "We don't make mistakes, just happy little accidents.",
+  "sentences": [
+    {
+      "words": [
+        "We",
+        "do",
+        "n't",
+        "make",
+        "mistakes",
+        ",",
+        "just",
+        "happy",
+        "little",
+        "accidents",
+        "."
+      ],
+      "startOffsets": [
+        0,
+        3,
+        5,
+        9,
+        14,
+        22,
+        24,
+        29,
+        35,
+        42,
+        51
+      ],
+      "endOffsets": [
+        2,
+        5,
+        8,
+        13,
+        22,
+        23,
+        28,
+        34,
+        41,
+        51,
+        52
+      ],
+      "lemmas": [
+        "we",
+        "do",
+        "not",
+        "make",
+        "mistake",
+        ",",
+        "just",
+        "happy",
+        "little",
+        "accident",
+        "."
+      ],
+      "tags": [
+        "PRP",
+        "VBP",
+        "RB",
+        "VB",
+        "NNS",
+        ",",
+        "RB",
+        "JJ",
+        "JJ",
+        "NNS",
+        "."
+      ],
+      "entities": [
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "dependencies": {
+        "edges": [
+          {
+            "destination": 0,
+            "source": 3,
+            "relation": "nsubj"
+          },
+          {
+            "destination": 1,
+            "source": 3,
+            "relation": "aux"
+          },
+          {
+            "destination": 2,
+            "source": 3,
+            "relation": "neg"
+          },
+          {
+            "destination": 4,
+            "source": 3,
+            "relation": "dobj"
+          },
+          {
+            "destination": 5,
+            "source": 3,
+            "relation": "punct"
+          },
+          {
+            "destination": 9,
+            "source": 3,
+            "relation": "dep"
+          },
+          {
+            "destination": 10,
+            "source": 3,
+            "relation": "punct"
+          },
+          {
+            "destination": 6,
+            "source": 7,
+            "relation": "advmod"
+          },
+          {
+            "destination": 7,
+            "source": 9,
+            "relation": "amod"
+          },
+          {
+            "destination": 8,
+            "source": 9,
+            "relation": "amod"
+          }
+        ],
+        "roots": [
+          3
+        ]
+      }
+    }
+  ]
+}
