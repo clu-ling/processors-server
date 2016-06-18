@@ -1,9 +1,17 @@
+[![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
+
 # processors-server
+
+## What is it?
+
 A [`spray`](spray.io) server exposing a REST API for text annotation via the [`processors`](https://github.com/clulab/processors) library
+
+## Requirements
+1. [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
+2. [`sbt`](http://www.scala-sbt.org/download.html)
 
 ## How is this useful?
 This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently there are services for using `processors`' `FastNLPProcessor` (a wrapper for `CoreNLP`) and `BioNLPProcessor`.
-
 
 ## Running `processors-server`
 
@@ -28,35 +36,56 @@ sbt "runMain NLPServer <your favorite port here>"
 
 ## Annotating text
 
-### Available services
+The following services are available:
 
-Text can be annotated by posting `json` with a `"text"` field to one of the following services  (see [example](src/main/resources/json/examples/message.json)).
+1. Text annotation (open-domain or biomedical) involving:
+  - sentence splitting
+  - tokenization
+  - lemmatization
+  - PoS tagging
+  - NER
+  - dependency parsing
+2. Sentiment analysis
+3. Rule-based IE using `Odin`
 
 #### `FastNLPProcessor`
+
+Text can be annotated by sending a POST request containing `json` with a `"text"` field to one of the following endpoints (see [example](src/main/resources/json/examples/message.json)):
 
 - `http://localhost:<your port here>/annotate`
 - `http://localhost:<your port here>/fastnlp/annotate`
 
 #### `BioNLPProcessor`
 
+Text can be annotated by sending a POST request containing `json` with a `"text"` field to the following endpoint (see [example](src/main/resources/json/examples/message.json)):
+
 - `http://localhost:<your port here>/bionlp/annotate`
 
-#### Sentiment analysis with `CoreNLP`
+### Sentiment analysis with `CoreNLP`
 
-- `http://localhost:<your port here>/corenlp/sentiment/document`
-  - Requires a `json` request containing a [`Document`](src/main/resources/json/schema/document.json) (see [example](src/main/resources/json/examples/document.json))
-- `http://localhost:<your port here>/corenlp/sentiment/sentence`
-  - Requires a `json` request containing a [`Sentence`](src/main/resources/json/schema/sentence.json) (see [example](src/main/resources/json/examples/sentence.json))
-- `http://localhost:<your port here>/corenlp/sentiment/text`
-  - Requires a `json` request containing a [`Message`](src/main/resources/json/schema/message.json) (see [example](src/main/resources/json/examples/message.json))
+- `http://localhost:<your port here>/corenlp/sentiment`
+  - Requires one of the following`json` POST requests:
+    - [`Document`](src/main/resources/json/schema/document.json) (see [example](src/main/resources/json/examples/document.json))
+    - [`Sentence`](src/main/resources/json/schema/sentence.json) (see [example](src/main/resources/json/examples/sentence.json))
+    - [`Message`](src/main/resources/json/schema/message.json) (see [example](src/main/resources/json/examples/message.json))
 
+### Rule-based IE with `Odin`
+
+- `http://localhost:<your port here>/odin/extract`
+  - Requires one of the following`json` POST requests:
+    - [text with rules](src/main/resources/json/schema/text-with-rules.json) (see [example](src/main/resources/json/examples/text-with-rules.json))
+    - [text with rules url](src/main/resources/json/schema/text-with-rules-url.json) (see [example](src/main/resources/json/examples/text-with-rules-url.json))
+    - [document with rules](src/main/resources/json/schema/document-with-rules.json) (see [example](src/main/resources/json/examples/document-with-rules.json))
+    - [document with rules url](src/main/resources/json/schema/document-with-rules-url.json) (see [example](src/main/resources/json/examples/document-with-rules-url.json))
+
+For more info on `Odin`, see [the manual](http://arxiv.org/pdf/1509.07513v1.pdf)
 # Responses
 
-The a POST to a `/annotate` endpoint will return a `json Document` of the form specified in [`document.json`](src/main/resources/json/schema.document.json).
+A `POST` to a `/annotate` endpoint will return a `Document` of the form specified in [`document.json`](src/main/resources/json/schema.document.json).
 
 ### An example using `cURL`
 
-To see it in action, you can try to POST `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:   
+To see it in action, you can try to `POST` `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:   
 ```bash
 curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/annotate
 ```
@@ -284,9 +313,9 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
 
 # `json` schema for responses
 
-Response schema can be found at (`src/main/resources/json/schema`)[src/main/resources/json/schema]
+Response schema can be found at [`src/main/resources/json/schema`](src/main/resources/json/schema)
 
-Examples of each can be found at (`src/main/resources/json/examples`)[src/main/resources/json/examples]
+Examples of each can be found at [`src/main/resources/json/examples`](src/main/resources/json/examples)
 
 
 ## Shutting down the server
@@ -302,8 +331,3 @@ If you're a Python user, you may be interested in using [`py-processors`](https:
 
 # Where can I get the latest and greatest fat `jar`?
 Cloning the project and running `sbt assembly` ensures the latest `jar`.  You can download a recent tub-of-`jar` [here](http://www.cs.arizona.edu/~hahnpowell/processors-server/current/processors-server.jar).
-
-# Future Plans
-- Add service for running rule-based [`odin` rule-based ie](http://arxiv.org/pdf/1509.07513v1.pdf) on some built-in grammars
-- Add service for submitting [`odin` rule-based ie](http://arxiv.org/pdf/1509.07513v1.pdf) custom grammars
-- Smarter Actors
