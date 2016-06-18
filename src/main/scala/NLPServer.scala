@@ -91,7 +91,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       } ~
       // Handle sentiment analysis of text
-      path("corenlp" / "sentiment" / "text") {
+      path("sentiment" / "corenlp" / "score") {
         entity(as[api.TextMessage]) { m =>
           logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
           val scores = ProcessorsBridge.toSentimentScores(m.text)
@@ -99,7 +99,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       } ~
       // Handle sentiment analysis of a Sentence
-      path("corenlp" / "sentiment" / "sentence") {
+      path("sentiment" / "corenlp" / "score") {
         entity(as[api.Sentence]) { s =>
           logger.info(s"CoreNLPSentimentAnalyzer received Sentence in POST with text -> ${s.words.mkString(" ")}")
           val sentence = ConverterUtils.toProcessorsSentence(s)
@@ -108,7 +108,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       } ~
       // Handle sentiment analysis of a Document
-      path("corenlp" / "sentiment" / "document") {
+      path("sentiment" / "corenlp" / "score") {
         entity(as[api.Document]) { doc =>
           logger.info(s"CoreNLPSentimentAnalyzer received Document in POST with text -> ${doc.text}")
           val document = ConverterUtils.toProcessorsDocument(doc)
@@ -117,7 +117,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       } ~
       // Handle IE with Odin
-      path("odin" / "extract" / "document" ) {
+      path("odin" / "extract") {
         entity(as[api.DocumentWithRules]) { dwr =>
           logger.info(s"Odin message received")
           val document = ConverterUtils.toProcessorsDocument(dwr.document)
@@ -125,7 +125,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
           complete(mentions)
         }
       } ~
-      path("odin" / "extract" / "document" ) {
+      path("odin" / "extract") {
         entity(as[api.DocumentWithRulesURL]) { dwu =>
           logger.info(s"Odin message received")
           val document = ConverterUtils.toProcessorsDocument(dwu.document)
@@ -133,7 +133,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
           complete(mentions)
         }
       } ~
-      path("odin" / "extract" / "text" ) {
+      path("odin" / "extract") {
         entity(as[api.TextWithRules]) { iem =>
           logger.info(s"Odin message received")
           val document = ProcessorsBridge.annotateWithFastNLP(iem.text)
