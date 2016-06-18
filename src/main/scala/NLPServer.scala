@@ -4,7 +4,6 @@ import processors.api
 import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
 import akka.actor.ActorSystem
-import scala.util.{Failure, Success}
 import processors._
 import scala.concurrent.duration._
 import akka.pattern.ask
@@ -119,15 +118,23 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
       } ~
       // Handle IE with Odin
       path("odin" / "extract" / "document" ) {
-        entity(as[api.DocumentIEMessage]) { iem =>
+        entity(as[api.DocumentWithRules]) { dwr =>
           logger.info(s"Odin message received")
-          val document = ConverterUtils.toProcessorsDocument(iem.document)
-          val mentions = ProcessorsBridge.getMentions(document, iem.rules)
+          val document = ConverterUtils.toProcessorsDocument(dwr.document)
+          val mentions = ProcessorsBridge.getMentions(document, dwr.rules)
+          complete(mentions)
+        }
+      } ~
+      path("odin" / "extract" / "document" ) {
+        entity(as[api.DocumentWithRulesURL]) { dwu =>
+          logger.info(s"Odin message received")
+          val document = ConverterUtils.toProcessorsDocument(dwu.document)
+          val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(dwu.url))
           complete(mentions)
         }
       } ~
       path("odin" / "extract" / "text" ) {
-        entity(as[api.TextIEMessage]) { iem =>
+        entity(as[api.TextWithRules]) { iem =>
           logger.info(s"Odin message received")
           val document = ProcessorsBridge.annotateWithFastNLP(iem.text)
           val mentions = ProcessorsBridge.getMentions(document, iem.rules)
