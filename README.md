@@ -81,7 +81,7 @@ Text can be annotated by sending a POST request containing `json` with a `"text"
 For more info on `Odin`, see [the manual](http://arxiv.org/pdf/1509.07513v1.pdf)
 # Responses
 
-A `POST` to a `/annotate` endpoint will return a `Document` of the form specified in [`document.json`](src/main/resources/json/schema.document.json).
+A `POST` to an `/annotate` endpoint will return a `Document` of the form specified in [`document.json`](src/main/resources/json/schema/document.json).
 
 ### An example using `cURL`
 
@@ -311,12 +311,13 @@ curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo 
 }
 ```
 
-# `json` schema for responses
+## `json` schema for responses
 
 Response schema can be found at [`src/main/resources/json/schema`](src/main/resources/json/schema)
 
 Examples of each can be found at [`src/main/resources/json/examples`](src/main/resources/json/examples)
 
+# Other Stuff
 
 ## Shutting down the server
 
@@ -326,7 +327,7 @@ You can shut down the server by posting anything to `/shutdown`
 
 send a `GET` to `/status`
 
-# Other Stuff
+# `py-processors`
 If you're a Python user, you may be interested in using [`py-processors`](https://github.com/myedibleenso/py-processors) in your NLP project.
 
 # Where can I get the latest and greatest fat `jar`?
