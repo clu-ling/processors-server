@@ -1,26 +1,39 @@
 package processors
 
-import _root_.processors.api.{Edge, Dependencies}
+import com.typesafe.scalalogging.LazyLogging
 import edu.arizona.sista.odin.{TextBoundMention, EventMention, RelationMention}
 import edu.arizona.sista.processors
 import edu.arizona.sista.struct.Interval
 import edu.arizona.sista.odin
 import edu.arizona.sista.processors.DependencyMap
 import edu.arizona.sista.struct.DirectedGraph
+import scala.io.Source
+import utils._
 
+object ConverterUtils extends LazyLogging {
 
-object ConverterUtils {
+  // For validating URLs to rule files
+  // ex. https://raw.githubusercontent.com/clulab/reach/508697db2217ba14cd1fa0a99174816cc3383317/src/main/resources/edu/arizona/sista/demo/open/grammars/rules.yml
+  val rulesURL = RichRegex("""(https?|ftp).+?\.(yml|yaml)$""")
 
-  def toDependencies(deps: DirectedGraph[String]): Dependencies = {
+  def urlToRules(url: String): String = {
+    require(rulesURL.matches(url), "Url must point to a .yaml or .yml file")
+    logger.info(s"Retrieving Odin rules from $url")
+    val page = Source.fromURL(url)
+    val rules = page.mkString
+    rules
+  }
+
+  def toDependencies(deps: DirectedGraph[String]): api.Dependencies = {
 
     val edges = for {
       (src, dest, rel) <- deps.allEdges
-    } yield Edge(
+    } yield api.Edge(
         destination = dest,
         source = src,
         relation = rel
       )
-    Dependencies(edges, deps.roots)
+    api.Dependencies(edges, deps.roots)
   }
 
   def toProcessorsDirectedGraph(deps: api.Dependencies): DependencyMap = {
