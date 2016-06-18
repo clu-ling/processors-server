@@ -45,7 +45,9 @@ libraryDependencies ++= {
     "org.clulab"          %%  "processors"     % procV classifier "models",
     // logging
     "ch.qos.logback" %  "logback-classic" % "1.1.7",
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.4.0"
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.4.0",
+    // testing
+    "org.scalatest" %% "scalatest" % "2.2.6" % Test
   )
 }
 
