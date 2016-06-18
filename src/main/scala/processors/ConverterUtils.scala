@@ -1,5 +1,6 @@
 package processors
 
+import processors.api
 import com.typesafe.scalalogging.LazyLogging
 import edu.arizona.sista.odin.{TextBoundMention, EventMention, RelationMention}
 import edu.arizona.sista.processors
@@ -16,12 +17,14 @@ object ConverterUtils extends LazyLogging {
   // ex. https://raw.githubusercontent.com/clulab/reach/508697db2217ba14cd1fa0a99174816cc3383317/src/main/resources/edu/arizona/sista/demo/open/grammars/rules.yml
   val rulesURL = RichRegex("""(https?|ftp).+?\.(yml|yaml)$""")
 
-  def urlToRules(url: String): String = {
-    require(rulesURL.matches(url), "Url must point to a .yaml or .yml file")
-    logger.info(s"Retrieving Odin rules from $url")
-    val page = Source.fromURL(url)
-    val rules = page.mkString
-    rules
+  @throws(classOf[api.BadURLException])
+  def urlToRules(url: String): String = rulesURL.matches(url) match {
+    case true =>
+      logger.info(s"Retrieving Odin rules from $url")
+      val page = Source.fromURL(url)
+      val rules = page.mkString
+      rules
+    case false => throw new api.BadURLException(url)
   }
 
   def toDependencies(deps: DirectedGraph[String]): api.Dependencies = {
