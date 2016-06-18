@@ -1,6 +1,5 @@
 package processors
 
-import processors.api
 import com.typesafe.scalalogging.LazyLogging
 import edu.arizona.sista.odin.{TextBoundMention, EventMention, RelationMention}
 import edu.arizona.sista.processors
@@ -10,6 +9,7 @@ import edu.arizona.sista.processors.DependencyMap
 import edu.arizona.sista.struct.DirectedGraph
 import scala.io.Source
 import utils._
+
 
 object ConverterUtils extends LazyLogging {
 
