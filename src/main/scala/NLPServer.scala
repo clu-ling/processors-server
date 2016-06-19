@@ -119,7 +119,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
       // Handle IE with Odin
       path("odin" / "extract") {
         entity(as[api.DocumentWithRules]) { dwr =>
-          logger.info(s"Odin message received")
+          logger.info(s"Odin endpoint received DocumentWithRules")
           val document = ConverterUtils.toProcessorsDocument(dwr.document)
           val mentions = ProcessorsBridge.getMentions(document, dwr.rules)
           complete(mentions)
@@ -127,7 +127,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
       } ~
       path("odin" / "extract") {
         entity(as[api.DocumentWithRulesURL]) { dwu =>
-          logger.info(s"Odin message received")
+          logger.info(s"Odin endpoint received DocumentWithRulesURL")
           val document = ConverterUtils.toProcessorsDocument(dwu.document)
           val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(dwu.url))
           complete(mentions)
