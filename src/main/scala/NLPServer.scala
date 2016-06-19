@@ -134,10 +134,18 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       } ~
       path("odin" / "extract") {
-        entity(as[api.TextWithRules]) { iem =>
-          logger.info(s"Odin message received")
-          val document = ProcessorsBridge.annotateWithFastNLP(iem.text)
-          val mentions = ProcessorsBridge.getMentions(document, iem.rules)
+        entity(as[api.TextWithRules]) { twr =>
+          logger.info(s"Odin endpoint received TextWithRules")
+          val document = ProcessorsBridge.annotateWithFastNLP(twr.text)
+          val mentions = ProcessorsBridge.getMentions(document, twr.rules)
+          complete(mentions)
+        }
+      } ~
+      path("odin" / "extract") {
+        entity(as[api.TextWithRulesURL]) { twu =>
+          logger.info(s"Odin endpoint received TextWithRulesURL")
+          val document = ProcessorsBridge.annotateWithFastNLP(twu.text)
+          val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(twu.url))
           complete(mentions)
         }
       } ~

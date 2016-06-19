@@ -24,7 +24,7 @@ case class TextWithRules(
   rules: String
 ) extends Message with Text with Rules
 
-case class TextWithRuleURL(
+case class TextWithRulesURL(
   text: String,
   url: String
 ) extends Message with Text with URL
