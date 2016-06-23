@@ -7,6 +7,8 @@ import edu.arizona.sista.struct.Interval
 import edu.arizona.sista.odin
 import edu.arizona.sista.processors.DependencyMap
 import edu.arizona.sista.struct.DirectedGraph
+import org.json4s.JValue
+import org.json4s.JsonAST.JObject
 import scala.io.Source
 import utils._
 
@@ -86,7 +88,15 @@ object ConverterUtils extends LazyLogging {
   def toDocument(doc: processors.Document): api.Document = {
     val text: String = if (doc.text.nonEmpty) doc.text.get else doc.sentences.map(_.words.mkString(" ")).mkString(" ")
     val sentences: Seq[api.Sentence] = doc.sentences.map(toSentence)
-    api.Document(text, sentences)
+    // Add discourse tree
+    // NOTE: the processors are currently initialized WITHOUT the discourse models,
+    // so this will always be empty.
+    // Memory consumption is currently far too high when initializing both processors with the discourse models
+    val dt: Option[JValue] = doc.discourseTree match {
+      case Some(tree) => Some(tree.buildJSON(JObject(), true, true))
+      case None => None
+    }
+    api.Document(text, sentences, dt)
   }
 
   def toMention(mention: odin.Mention): api.Mention = mention match {

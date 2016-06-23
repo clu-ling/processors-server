@@ -12,8 +12,9 @@ import edu.arizona.sista.processors.fastnlp.FastNLPProcessor
 object ProcessorsBridge {
 
   // initialize a processor
-  lazy val fastnlp = new FastNLPProcessor()
-  lazy val bionlp = new BioNLPProcessor()
+  // withDiscourse is disabled to control memory consumption
+  lazy val fastnlp = new FastNLPProcessor(withDiscourse = false)
+  lazy val bionlp = new BioNLPProcessor(withDiscourse = false)
 
   val defaultProc = fastnlp
 
