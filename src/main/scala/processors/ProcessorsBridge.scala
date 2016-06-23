@@ -17,9 +17,16 @@ object ProcessorsBridge {
 
   val defaultProc = fastnlp
 
+  /** annotate text */
   def annotate(text: String): processors.Document = toAnnotatedDocument(text, defaultProc)
   def annotateWithFastNLP(text: String): processors.Document = toAnnotatedDocument(text, fastnlp)
   def annotateWithBioNLP(text: String): processors.Document = toAnnotatedDocument(text, bionlp)
+
+  /** Avoid sentence splitting */
+  def annotate(sentences: Seq[String]): processors.Document = toAnnotatedDocument(sentences, defaultProc)
+  def annotateWithFastNLP(sentences: Seq[String]): processors.Document = toAnnotatedDocument(sentences, fastnlp)
+  def annotateWithBioNLP(sentences: Seq[String]): processors.Document = toAnnotatedDocument(sentences, bionlp)
+  def toAnnotatedDocument(sentences: Seq[String], proc: Processor): processors.Document = proc.annotateFromSentences(sentences, true)
 
   // convert processors document to a json-serializable format
   def toAnnotatedDocument(text: String, proc: Processor): processors.Document = {
@@ -28,6 +35,13 @@ object ProcessorsBridge {
 
   def toSentimentScores(text: String): SentimentScores = {
     val scores = CoreNLPSentimentAnalyzer.sentiment(text)
+    SentimentScores(scores)
+  }
+
+  /** Get sentiment scores for text already segmented into sentences */
+  def toSentimentScores(sentences: Seq[String]): SentimentScores = {
+    val doc = annotateWithFastNLP(sentences)
+    val scores = CoreNLPSentimentAnalyzer.sentiment(doc)
     SentimentScores(scores)
   }
 
