@@ -48,9 +48,11 @@ The following services are available:
 2. Sentiment analysis
 3. Rule-based IE using `Odin`
 
-#### `FastNLPProcessor`
+Text can be annotated by sending a POST request containing `json` with a `"text"` field to one of the following `annotate` endpoints (see [example](src/main/resources/json/examples/message.json)).
 
-Text can be annotated by sending a POST request containing `json` with a `"text"` field to one of the following endpoints (see [example](src/main/resources/json/examples/message.json)):
+You may also send text already segmented into sentences by posting a [`SentencesMessage`](src/main/resources/json/schema/sentences-message.json) (see [example](src/main/resources/json/examples/sentences-message.json)) to the same `annotate` endpoint.  This is just a `json` frame with a `"sentences"` field pointing to an array of strings.
+
+#### `FastNLPProcessor`
 
 - `http://localhost:<your port here>/annotate`
 - `http://localhost:<your port here>/fastnlp/annotate`
@@ -63,11 +65,16 @@ Text can be annotated by sending a POST request containing `json` with a `"text"
 
 ### Sentiment analysis with `CoreNLP`
 
-- `http://localhost:<your port here>/corenlp/sentiment`
+- `http://localhost:<your port here>/corenlp/sentiment/score`
   - Requires one of the following`json` POST requests:
     - [`Document`](src/main/resources/json/schema/document.json) (see [example](src/main/resources/json/examples/document.json))
     - [`Sentence`](src/main/resources/json/schema/sentence.json) (see [example](src/main/resources/json/examples/sentence.json))
     - [`Message`](src/main/resources/json/schema/message.json) (see [example](src/main/resources/json/examples/message.json))
+
+You can also send text that has already been segmented into sentences:
+  - post a [`SentencesMessage`](src/main/resources/json/schema/sentences-message.json) (see [example](src/main/resources/json/examples/sentences-message.json)) to `http://localhost:<your port here>/corenlp/sentiment/score/segmented`
+
+Responses will be [`SentimentScores`](src/main/resources/json/schema/scores.json) (see [example](src/main/resources/json/examples/scores.json))
 
 ### Rule-based IE with `Odin`
 
