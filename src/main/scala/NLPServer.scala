@@ -5,6 +5,7 @@ import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
 import akka.actor.ActorSystem
 import processors._
+import edu.arizona.sista.processors
 import scala.concurrent.duration._
 import akka.pattern.ask
 import spray.can.server.Stats
@@ -125,20 +126,21 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
           complete(scores)
         }
       } ~
-      // Handle sentiment analysis of a seq of text
-      path("sentiment" / "corenlp" / "score") {
-        entity(as[api.SentencesMessage]) { sm =>
-          logger.info(s"CoreNLPSentimentAnalyzer received POST with text already segmented into sentences")
-          val scores = ProcessorsBridge.toSentimentScores(sm.sentences)
-          complete(scores)
-        }
-      } ~
       // Handle sentiment analysis of a Sentence
       path("sentiment" / "corenlp" / "score") {
         entity(as[api.Sentence]) { s =>
           logger.info(s"CoreNLPSentimentAnalyzer received Sentence in POST with text -> ${s.words.mkString(" ")}")
-          val sentence = ConverterUtils.toProcessorsSentence(s)
+          val sentence: processors.Sentence = ConverterUtils.toProcessorsSentence(s)
           val scores = ProcessorsBridge.toSentimentScores(sentence)
+          complete(scores)
+        }
+      } ~
+      // Handle sentiment analysis of a seq of text
+      path("sentiment" / "corenlp" / "score" / "segmented") {
+        entity(as[api.SentencesMessage]) { sm =>
+          logger.info(s"CoreNLPSentimentAnalyzer received POST with text already segmented into sentences")
+          val sentences: Seq[String] = sm.sentences
+          val scores = ProcessorsBridge.toSentimentScores(sentences)
           complete(scores)
         }
       } ~
@@ -146,7 +148,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
       path("sentiment" / "corenlp" / "score") {
         entity(as[api.Document]) { doc =>
           logger.info(s"CoreNLPSentimentAnalyzer received Document in POST with text -> ${doc.text}")
-          val document = ConverterUtils.toProcessorsDocument(doc)
+          val document: processors.Document = ConverterUtils.toProcessorsDocument(doc)
           val scores = ProcessorsBridge.toSentimentScores(document)
           complete(scores)
         }
