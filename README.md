@@ -28,11 +28,14 @@ cd processors-server
 sbt "runMain NLPServer"
 ```
 
-By default, the server will run on port `8888`, though you can start the server using a different port:
+By default, the server will run on port `8888` and `localhost`, though you can start the server using a different port and host:
 
 ```bash
-sbt "runMain NLPServer <your favorite port here>"
+sbt "runMain NLPServer --host <your favorite host here> --port <your favorite port here>"
 ```
+## Logging
+
+A server log is written to `.processors-server.log` in the directory in which the server is run.
 
 # Communicating with the server
 
