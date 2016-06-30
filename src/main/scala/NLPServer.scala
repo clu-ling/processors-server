@@ -9,6 +9,7 @@ import processors._
 import utils.buildArgMap
 import org.clulab.processors
 import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 import akka.pattern.ask
 import spray.can.server.Stats
 import spray.can.Http
@@ -29,6 +30,8 @@ object MessageProtocol extends Json4sSupport {
  */
 object NLPServer extends App with SimpleRoutingApp with LazyLogging {
 
+  val config = ConfigFactory.load()
+
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
         "Uptime                : " + stats.uptime.formatHMS + '\n' +
@@ -45,7 +48,7 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
   ProcessorsBridge.annotateWithFastNLP("blah")
   ProcessorsBridge.annotateWithBioNLP("blah")
 
-  implicit val system = ActorSystem("processors-courier")
+  implicit val system = ActorSystem("processors-courier", config)
 
   import MessageProtocol._
 
@@ -201,6 +204,12 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
         }
       }
     }
+  }.onComplete { // check if binding was successful
+    case Success(b) =>
+      logger.info(s"Successfully bound to ${b.localAddress}")
+    case Failure(ex) =>
+      logger.error(s"Binding failed. Exiting...")
+       system.shutdown()
   }
 }
 
