@@ -5,7 +5,7 @@ import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
 import akka.actor.ActorSystem
 import processors._
-import edu.arizona.sista.processors
+import org.clulab.processors
 import scala.concurrent.duration._
 import akka.pattern.ask
 import spray.can.server.Stats

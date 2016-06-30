@@ -1,12 +1,12 @@
 package processors
 
 import _root_.processors.api.SentimentScores
-import edu.arizona.sista.odin.ExtractorEngine
-import edu.arizona.sista.processors
-import edu.arizona.sista.processors.Processor
-import edu.arizona.sista.processors.corenlp.CoreNLPSentimentAnalyzer
-import edu.arizona.sista.processors.bionlp.BioNLPProcessor
-import edu.arizona.sista.processors.fastnlp.FastNLPProcessor
+import org.clulab.odin.ExtractorEngine
+import org.clulab.processors
+import org.clulab.processors.Processor
+import org.clulab.processors.corenlp.CoreNLPSentimentAnalyzer
+import org.clulab.processors.bionlp.BioNLPProcessor
+import org.clulab.processors.fastnlp.FastNLPProcessor
 
 
 object ProcessorsBridge {

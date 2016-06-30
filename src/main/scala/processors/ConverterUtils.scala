@@ -1,12 +1,12 @@
 package processors
 
 import com.typesafe.scalalogging.LazyLogging
-import edu.arizona.sista.odin.{TextBoundMention, EventMention, RelationMention}
-import edu.arizona.sista.processors
-import edu.arizona.sista.struct.Interval
-import edu.arizona.sista.odin
-import edu.arizona.sista.processors.DependencyMap
-import edu.arizona.sista.struct.DirectedGraph
+import org.clulab.odin.{TextBoundMention, EventMention, RelationMention}
+import org.clulab.processors
+import org.clulab.struct.Interval
+import org.clulab.odin
+import org.clulab.processors.DependencyMap
+import org.clulab.struct.DirectedGraph
 import org.json4s.JValue
 import org.json4s.JsonAST.JObject
 import scala.io.Source

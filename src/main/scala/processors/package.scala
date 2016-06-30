@@ -1,5 +1,5 @@
 import com.typesafe.scalalogging.LazyLogging
-import edu.arizona.sista.processors
+import org.clulab.processors
 
 
 package object processors extends LazyLogging {
