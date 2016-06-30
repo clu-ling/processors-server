@@ -61,8 +61,9 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
   // determine server configuration
   // mostly useful for passing args to fat jar
   val argMap = buildArgMap(ServerConfig.defaults, args.toList)
-  val p: Int = ServerConfig.defaults(ServerConfig.port).toInt
-  val h: String = ServerConfig.defaults(ServerConfig.host)
+  val p: Int = argMap(ServerConfig.port).toInt
+  val h: String = argMap(ServerConfig.host)
+  logger.info(s"Binding target for server: $h:$p")
 
   startServer(interface = h, port = p) {
     get {
