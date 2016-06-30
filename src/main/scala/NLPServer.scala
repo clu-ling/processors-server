@@ -1,3 +1,4 @@
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 import org.json4s.{Formats, DefaultFormats}
 import processors.api
@@ -5,6 +6,7 @@ import spray.http.ContentTypes
 import spray.routing.SimpleRoutingApp
 import akka.actor.ActorSystem
 import processors._
+import utils.buildArgMap
 import org.clulab.processors
 import scala.concurrent.duration._
 import akka.pattern.ask
@@ -13,6 +15,7 @@ import spray.can.Http
 import spray.httpx.marshalling.Marshaller
 import spray.httpx.Json4sSupport
 import spray.util._
+
 
 // for handling incoming json
 object MessageProtocol extends Json4sSupport {
@@ -25,8 +28,6 @@ object MessageProtocol extends Json4sSupport {
  * Spray server for NLP (bridge to processors library)
  */
 object NLPServer extends App with SimpleRoutingApp with LazyLogging {
-
-  val defaultPort = 8888
 
   implicit val statsMarshaller: Marshaller[Stats] =
     Marshaller.delegate[Stats, String](ContentTypes.`text/plain`) { stats =>
@@ -54,8 +55,13 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
   def in[U](duration: FiniteDuration)(body: => U): Unit =
     system.scheduler.scheduleOnce(duration)(body)
 
-  val p: Int = if (args.nonEmpty) args(0).toInt else defaultPort
-  startServer(interface = "localhost", port = p) {
+  // determine server configuration
+  // mostly useful for passing args to fat jar
+  val argMap = buildArgMap(ServerConfig.defaults, args.toList)
+  val p: Int = ServerConfig.defaults(ServerConfig.port).toInt
+  val h: String = ServerConfig.defaults(ServerConfig.host)
+
+  startServer(interface = h, port = p) {
     get {
       path("status") {
         complete {
@@ -196,4 +202,20 @@ object NLPServer extends App with SimpleRoutingApp with LazyLogging {
       }
     }
   }
+}
+
+/**
+ * Server configuration
+ */
+object ServerConfig {
+
+  val config = ConfigFactory.load()
+  val port = "port"
+  val host = "host"
+  val defaultPort = config.getString("defaults.port")
+  val defaultHostName = config.getString("defaults.host")
+  val defaults = Map(
+    port -> defaultPort,
+    host -> defaultHostName
+  )
 }

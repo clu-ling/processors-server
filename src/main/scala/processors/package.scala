@@ -16,5 +16,4 @@ package object processors extends LazyLogging {
         |dependency roots: ${sentence.dependencies.get.roots.mkString(" ")}
     """.stripMargin)
   }
-
 }
