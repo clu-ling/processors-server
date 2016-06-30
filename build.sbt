@@ -1,6 +1,6 @@
 name := "processors-server"
 
-version := "2.7"
+version := "2.8"
 
 scalaVersion := "2.11.6"
 
