@@ -44,7 +44,7 @@ class TestConverterUtils extends FlatSpec with Matchers {
   "ConverterUtils.urlToRules" should "retrieve Odin rules from a url pointing to a yaml file" in {
     val text = "Homer Simpson is a named entity."
     val procDoc = ProcessorsBridge.annotate(text)
-    val url = "https://raw.githubusercontent.com/clulab/reach/master/src/main/resources/edu/arizona/sista/demo/open/grammars/rules.yml"
+    val url = "https://raw.githubusercontent.com/clulab/reach/c33eb9f4f772ff246c4883b7c3230d9154305402/src/main/resources/org/clulab/demo/open/grammars/rules.yml"
     val rules = ConverterUtils.urlToRules(url)
     rules.nonEmpty should be(true)
     val mentions = ProcessorsBridge.getMentions(procDoc, rules)
