@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -7,7 +8,8 @@
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>.processors-server.log</file>
+        <param name="Append" value="false" />
+        <file>${HOME:-${USERPROFILE}}/.processors-server.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -17,7 +19,7 @@
         <appender-ref ref="file"/>
     </logger>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="console"/>
         <appender-ref ref="file"/>
     </root>
