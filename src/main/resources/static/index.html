@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>processors-server</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+</head>
+<body>
+<div class="container theme-showcase" role="main">
+
+    <!-- jumbotron -->
+    <div class="jumbotron">
+        <h1><code>processors-server</code></h1>
+        <div><h3 id="version"><h3></div>
+        <div>
+          <p>Web interface to the CLU Lab's <a href="https://github.com/clulab/processors"><code>processors</code></a> NLP library</p>
+        </div>
+    </div>
+
+    <div class="container">
+      <h2>Services</h2>
+      <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>Request type</th>
+          <th>Request form</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Annotate -->
+        <tr>
+          <td><code>/annotate</code></td>
+          <td><code>POST</code></td>
+          <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+          <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
+        </tr>
+        <tr>
+          <td><code>/fastnlp/annotate</code></td>
+          <td><code>POST</code></td>
+          <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+          <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
+        </tr>
+        <tr>
+          <td><code>/bionlp/annotate</code></td>
+          <td><code>POST</code></td>
+          <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+          <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- Sentiment -->
+        <tr>
+          <td><code>/sentiment/corenlp/score</code></td>
+          <td><code>POST</code></td>
+          <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a>, <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/sentence.json"><code>Sentence</code></a>, or <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text": ""}</code></a></td>
+          <td>Produces a sentiment score for each sentence using <code>FastNLPProcessor</code>.  Responses are of the form <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/scores.json"><code>{"scores": []}<code></a></td>
+        </tr>
+        <!-- Odin -->
+        <tr>
+          <td><code>/odin/extract</code></td>
+          <td><code>POST</code></td>
+          <td>Recieves a <code>POST</code> of one of the following forms:
+              <ol>
+                <li><code>{"rules": "", "text": ""}</code></li>
+                <li><code>{"rules": "", "document": {}}</code></li>
+                <li><code>{"url": "", "text": ""}</code></li>
+                <li><code>{"url": "", "document": {}}</code></li>
+              </ol>
+              a <code>"url"</code> value should end in <code>.yml</code>.
+          </td>
+          <td>Responses are of the form <code>{"mentions": []}</code></td>
+        </tr>
+        <tr>
+          <td><code>/shutdown</code></td>
+          <td><code>POST</code></td>
+          <td></td>
+          <td>Any <code>POST</code> to this endpoint will shutdown the server.</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <h2>Demos</h2>
+    <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Link</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Odin -->
+      <tr>
+        <td><a id="odin-demo" href="#">Odin</a></td>
+        <td>A demonstration of IE with Odin</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script "text/javascript">
+    $('document').ready(function () {
+      // Retrieve version
+      $.ajax({
+        url: location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + "/version",
+        method: "POST"
+      }).done(function( data ) {
+        // console.log(JSON.stringify(data));
+        var version = data["version"];
+        // console.log(version);
+        $('#version').text("v" + version);
+      });
+
+      // Build link to Odin demo
+      $('#odin-demo').click(
+        function(){
+          service = location.protocol + '//' + location.hostname + (location.port ? ':'+location.port: '') + "/odin/demo";
+          var win = window.open(service, '_blank');
+          win.focus();
+      });
+    });
+  </script>
+</body>
+</html>

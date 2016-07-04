@@ -1,6 +1,10 @@
+import com.typesafe.config._
+
+val conf = ConfigFactory.parseFile(new File("src/main/resources/application.conf")).resolve()
+
 name := "processors-server"
 
-version := "2.8"
+version := conf.getString("version")
 
 scalaVersion := "2.11.6"
 
@@ -25,30 +29,35 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 //logLevel := Level.Info
 
 libraryDependencies ++= {
-  val akkaV = "2.3.9"
-  val sprayV = "1.3.3"
+  val akkaV = "2.4.3"
   val json4sV = "3.3.0"
   val procV = "5.9.0"
+  //val twirlV = "1.2.0"
 
   Seq(
-    "io.spray"                           %%  "spray-can"            % sprayV,
-    "io.spray"                           %%  "spray-routing"        % sprayV,
-    "io.spray"                           %%  "spray-client"         % sprayV,
-    //"io.spray"                         %%  "spray-json"          % sprayV,
-    "org.json4s"                         %%  "json4s-native"        % json4sV,
-    "org.json4s"                         %%  "json4s-jackson"       % json4sV,
-    "io.spray"                           %%  "spray-testkit"        % sprayV   % "test",
-    "com.typesafe.akka"                  %%  "akka-actor"           % akkaV,
-    "com.typesafe.akka"                  %%  "akka-testkit"         % akkaV    % "test",
-    "com.typesafe.akka"                  %%  "akka-slf4j"           % akkaV,
-    "org.specs2"                         %%  "specs2-core"          % "2.3.11" % "test",
-    "org.clulab"                         %%  "processors"           % procV,
-    "org.clulab"                         %%  "processors"           % procV classifier "models",
+    "org.json4s"                         %%  "json4s-native"                         % json4sV,
+    "org.json4s"                         %%  "json4s-jackson"                        % json4sV,
+    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.7.0",
+    // Twirl
+    //"com.typesafe.play"                  %% "twirl-api"                              % twirlV,
+    // AKKA
+    "com.typesafe.akka"                  %%  "akka-actor"                            % akkaV,
+    "com.typesafe.akka"                  %%  "akka-stream"                           % akkaV,
+    "com.typesafe.akka"                  %%  "akka-http-experimental"                % akkaV,
+    "com.typesafe.akka"                  %%  "akka-http-spray-json-experimental"     % akkaV,
+    "com.typesafe.akka"                  %%  "akka-http-testkit"                     % akkaV,
+    "com.typesafe.akka"                  %%  "akka-actor"                            % akkaV,
+    "com.typesafe.akka"                  %%  "akka-testkit"                          % akkaV    % "test",
+    "com.typesafe.akka"                  %%  "akka-slf4j"                            % akkaV,
+    "com.typesafe.akka"                  %%  "akka-http-xml-experimental"            % akkaV,
+    "org.specs2"                         %%  "specs2-core"                           % "2.3.11" % "test",
+    "org.clulab"                         %%  "processors"                            % procV,
+    "org.clulab"                         %%  "processors"                            % procV classifier "models",
     // logging
-    "ch.qos.logback"                      %  "logback-classic"      % "1.1.7",
-    "com.typesafe.scala-logging"         %%  "scala-logging"        % "3.4.0",
+    "ch.qos.logback"                      %  "logback-classic"                       % "1.1.7",
+    "com.typesafe.scala-logging"         %%  "scala-logging"                         % "3.4.0",
     // testing
-    "org.scalatest"                      %% "scalatest"             % "2.2.6" % Test
+    "org.scalatest"                      %% "scalatest"                              % "2.2.6" % Test
   )
 }
 

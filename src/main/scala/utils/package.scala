@@ -1,14 +1,22 @@
+import com.typesafe.config.ConfigFactory
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 
 package object utils {
 
+  /** for keeping track of information related to the server **/
+  case class Description(version: String)
+
   case class RichRegex(override val regex: String) extends Regex(regex) {
     def matches(s: String) = this.pattern.matcher(s).matches
   }
 
   implicit def toRichRegex(regex: Regex): RichRegex = RichRegex(regex.toString)
+
+  def projectVersion: String = ConfigFactory.load().getString("version")
+
+  def mkDescription: Description = Description(projectVersion)
 
   @throws(classOf[Exception])
   @tailrec

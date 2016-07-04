@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Odin Rules</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <style>
+      textarea.rules {
+        font-family:"Courier New", Courier, monospace;
+      }
+    </style>
+</head>
+<body>
+  <h1>Information Extraction with Odin</h1>
+  <div class="container-fluid">
+    <form data-toggle="validator" role="form" class="col-xs-6" id="rule-based-ie">
+      <div class="form-group">
+        <label for="text" class="control-label">Text</label>
+        <textarea class="form-control" rows="8" id="text" placeholder="Your text here" required>
+Barack Hussein Obama II (born August 4, 1961) is an American politician serving as the 44th President of the United States. He is the first African American to hold the office, as well as the first president born outside of the continental United States. Born in Honolulu, Hawaii, Obama is a graduate of Columbia University and Harvard Law School, where he served as president of the Harvard Law Review. He was a community organizer in Chicago before earning his law degree. He worked as a civil rights attorney and taught constitutional law at the University of Chicago Law School between 1992 and 2004. He served three terms representing the 13th District in the Illinois Senate from 1997 to 2004, and ran unsuccessfully in the Democratic primary for the United States House of Representatives in 2000 against incumbent Bobby Rush.
+        </textarea>
+      </div>
+      <div class="form-group">
+        <label for="rules" class="control-label">Rules</label>
+        <textarea class="form-control rules" rows="8" id="rules" placeholder="Odin rules" required>
+- name: "ner-person"
+  label: [Person, PossiblePerson, Entity]
+  priority: 1
+  type: token
+  pattern: |
+   [entity="PERSON"]+
+   |
+   [tag=/^N/]* [tag=/^N/ & outgoing="cop"] [tag=/^N/]*
+- name: "ner-location"
+  label: [Location, PossibleLocation, Entity]
+  priority: 1
+  type: token
+  pattern: |
+    [entity="LOCATION"]+
+        </textarea>
+      </div>
+      <div class="radio">
+         <label>
+           <input type="radio" name="optionsRadios" id="optionsRadios1" value="open-domain" checked>
+           Open domain
+         </label>
+       </div>
+       <div class="radio disabled">
+         <label>
+           <input type="radio" name="optionsRadios" id="optionsRadios2" value="biomedical">
+           <font color="grey">Biomedical</font>
+         </label>
+       </div>
+       <div class="radio disabled">
+         <label>
+           <input type="radio" name="optionsRadios" id="optionsRadios3" value="twitter" disabled>
+           <font color="grey">Tweets</font>
+         </label>
+       </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+  <!-- results here -->
+  <div id="results" class="container-fluid col-xs-6">
+    Results
+    <textarea class="form-control" rows="8" id="mentions" placeholder="No results" readonly>
+    </textarea>
+  </div>
+  <!-- modal to display while loading -->
+  <div class="modal fade" id="processing-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">
+    <div class="modal-dialog modal-m">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0;">Applying rules...</h3></div>
+          <div class="modal-body">
+            <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script type='text/javascript'>
+    $('document').ready(function () {
+      $('#rule-based-ie').on('submit', function (e) {
+          if (e.isDefaultPrevented()) {
+              alert('form is not valid');
+          } else {
+              e.preventDefault();
+              sendAJAXrequest();
+         }
+      });
+
+      function openModal() {
+        console.log("Displaying modal...");
+        $("#processing-modal").modal('show');
+      }
+
+      function closeModal() {
+        console.log("Closing modal...");
+        $("#processing-modal").modal('hide');
+      }
+
+      function sendAJAXrequest() {
+        openModal();
+        var address = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+        console.log(address);
+        xhr = new XMLHttpRequest();
+        var url = address + "/odin/extract";
+        console.log(url);
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var json = JSON.parse(xhr.responseText);
+            $('#mentions').val(JSON.stringify(json, null, 2));
+            // TODO: make call to server and render response
+            //$("#results").removeClass('hidden');
+            closeModal();
+          }
+        }
+        // build request from the two textareas
+        var data = JSON.stringify({"text":$('#text').val(),"rules":$('#rules').val()});
+        console.log("data " + data);
+        xhr.send(data);
+      }
+    });
+  </script>
+</body>
+</html>
