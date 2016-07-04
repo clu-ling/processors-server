@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
 
-Current version: 2.8
+Current version: 2.9
 
 # processors-server
 
@@ -35,9 +35,11 @@ sbt "runMain NLPServer --host <your favorite host here> --port <your favorite po
 ```
 ## Logging
 
-A server log is written to `.processors-server.log` in the directory in which the server is run.
+A server log is written to `.processors-server.log` in home directory of the user who launches the server.
 
 # Communicating with the server
+
+_NOTE: Once the server has started, a summary of the services currently available (including links to demos) can be found at the following url: `http://<your host name here>:<your port here>`
 
 ## Annotating text
 
@@ -63,6 +65,8 @@ You may also send text already segmented into sentences by posting a [`Sentences
 - `http://localhost:<your port here>/fastnlp/annotate`
 
 #### `BioNLPProcessor`
+
+The resources (model files) for this processor are loaded lazily when the first call is made.
 
 Text can be annotated by sending a POST request containing `json` with a `"text"` field to the following endpoint (see [example](src/main/resources/json/examples/message.json)):
 
