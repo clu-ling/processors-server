@@ -1,20 +1,11 @@
-import com.typesafe.config._
-
-val conf = ConfigFactory.parseFile(new File("src/main/resources/application.conf")).resolve()
-
 name := "processors-server"
 
-version := conf.getString("version")
+version := "2.9"
 
 scalaVersion := "2.11.6"
 
 // options for forked jvm
 javaOptions += "-Xmx3G"
-
-// CoreNLP requires Java 8, so there's no point in compiling for 7
-//scalacOptions += "-target:jvm-1.7" // "-target:jvm-1.8"
-//
-//javacOptions in compile ++= Seq("-source", "1.7", "-target", "1.7")
 
 // forward sbt's stdin to forked process
 connectInput in run := true
@@ -35,6 +26,7 @@ libraryDependencies ++= {
   //val twirlV = "1.2.0"
 
   Seq(
+    "com.typesafe"                        %  "config"                                % "1.3.0",
     "org.json4s"                         %%  "json4s-native"                         % json4sV,
     "org.json4s"                         %%  "json4s-jackson"                        % json4sV,
     "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.7.0",

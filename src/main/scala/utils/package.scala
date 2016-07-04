@@ -1,4 +1,3 @@
-import com.typesafe.config.ConfigFactory
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
@@ -14,7 +13,7 @@ package object utils {
 
   implicit def toRichRegex(regex: Regex): RichRegex = RichRegex(regex.toString)
 
-  def projectVersion: String = ConfigFactory.load().getString("version")
+  def projectVersion: String = getClass.getPackage.getImplementationVersion
 
   def mkDescription: Description = Description(projectVersion)
 
