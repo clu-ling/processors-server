@@ -6,7 +6,7 @@ Current version: 2.9
 
 ## What is it?
 
-A [`spray`](spray.io) server exposing a REST API for text annotation via the [`processors`](https://github.com/clulab/processors) library
+An `akka-http` server exposing a REST API for text annotation via the [`processors`](https://github.com/clulab/processors) library
 
 ## Requirements
 1. [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
