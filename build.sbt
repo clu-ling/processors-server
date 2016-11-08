@@ -1,8 +1,8 @@
 name := "processors-server"
 
-version := "2.9"
+version := "3.0"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 // options for forked jvm
 javaOptions += "-Xmx3G"
@@ -22,7 +22,7 @@ scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 libraryDependencies ++= {
   val akkaV = "2.4.3"
   val json4sV = "3.3.0"
-  val procV = "5.9.0"
+  val procV = "6.0.0"
   //val twirlV = "1.2.0"
 
   Seq(
@@ -43,8 +43,9 @@ libraryDependencies ++= {
     "com.typesafe.akka"                  %%  "akka-slf4j"                            % akkaV,
     "com.typesafe.akka"                  %%  "akka-http-xml-experimental"            % akkaV,
     "org.specs2"                         %%  "specs2-core"                           % "2.3.11" % "test",
-    "org.clulab"                         %%  "processors"                            % procV,
-    "org.clulab"                         %%  "processors"                            % procV classifier "models",
+    "org.clulab"                         %%  "processors-main"                       % procV,
+    "org.clulab"                         %%  "processors-corenlp"                    % procV,
+    "org.clulab"                         %%  "processors-models"                     % procV,
     // logging
     "ch.qos.logback"                      %  "logback-classic"                       % "1.1.7",
     "com.typesafe.scala-logging"         %%  "scala-logging"                         % "3.4.0",
