@@ -1,5 +1,6 @@
 package processors.api
 
+import org.json4s.JValue
 import processors.api
 
 
@@ -40,11 +41,11 @@ case class TextWithRulesURL(
 ) extends Message with Text with URL
 
 case class DocumentWithRules(
-  document: api.Document,
+  document: JValue,
   rules: String
 ) extends Message with Rules
 
 case class DocumentWithRulesURL(
-  document: api.Document,
+  document: JValue,
   url: String
 ) extends Message with URL
