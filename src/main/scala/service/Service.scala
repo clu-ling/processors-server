@@ -164,39 +164,37 @@ trait Service extends Json4sSupport {
           } ~
           // Handle IE with Odin
           path("api" / "odin" / "extract") {
-            entity(as[api.DocumentWithRules]) { dwr =>
-              logger.info(s"Odin endpoint received DocumentWithRules")
-              val document = ConverterUtils.toProcessorsDocument(dwr.document)
-              val mentions = ProcessorsBridge.getMentions(document, dwr.rules)
-              val json = ConverterUtils.toJSON(mentions)
-              complete(json)
-            }
-          } ~
-          path("api" / "odin" / "extract") {
-            entity(as[api.DocumentWithRulesURL]) { dwu =>
-              logger.info(s"Odin endpoint received DocumentWithRulesURL")
-              val document = ConverterUtils.toProcessorsDocument(dwu.document)
-              val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(dwu.url))
-              val json = ConverterUtils.toJSON(mentions)
-              complete(json)
-            }
-          } ~
-          path("api" / "odin" / "extract") {
-            entity(as[api.TextWithRules]) { twr =>
-              logger.info(s"Odin endpoint received TextWithRules")
-              val document = ProcessorsBridge.annotateWithFastNLP(twr.text)
-              val mentions = ProcessorsBridge.getMentions(document, twr.rules)
-              val json = ConverterUtils.toJSON(mentions)
-              complete(json)
-            }
-          } ~
-          path("api" / "odin" / "extract") {
-            entity(as[api.TextWithRulesURL]) { twu =>
-              logger.info(s"Odin endpoint received TextWithRulesURL")
-              val document = ProcessorsBridge.annotateWithFastNLP(twu.text)
-              val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(twu.url))
-              val json = ConverterUtils.toJSON(mentions)
-              complete(json)
+            entity(as[JValue]) {
+              case dwu if dwu \ "document" != JNothing && dwu \ "url" != JNothing =>
+                logger.info(s"Odin endpoint received DocumentWithRulesURL")
+                val document = ConverterUtils.toProcessorsDocument(dwu \ "document")
+                val url = (dwu \ "url").extract[String]
+                val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(url))
+                val json = ConverterUtils.toJSON(mentions)
+                complete(json)
+              case dwr if dwr \ "document" != JNothing && dwr \ "rules" != JNothing =>
+                logger.info(s"Odin endpoint received DocumentWithRules")
+                val document = ConverterUtils.toProcessorsDocument(dwr \ "document")
+                val rules = (dwr \ "rules").extract[String]
+                val mentions = ProcessorsBridge.getMentions(document, rules)
+                val json = ConverterUtils.toJSON(mentions)
+                complete(json)
+              case twr if twr \ "text" != JNothing && twr \ "rules" != JNothing =>
+                logger.info(s"Odin endpoint received TextWithRules")
+                val text = (twr \ "text").extract[String]
+                val rules = (twr \ "rules").extract[String]
+                val document = ProcessorsBridge.annotateWithFastNLP(text)
+                val mentions = ProcessorsBridge.getMentions(document, rules)
+                val json = ConverterUtils.toJSON(mentions)
+                complete(json)
+              case twu if twu \ "text" != JNothing && twu \ "rules" != JNothing =>
+                logger.info(s"Odin endpoint received TextWithRulesURL")
+                val text = (twu \ "text").extract[String]
+                val url = (twu \ "url").extract[String]
+                val document = ProcessorsBridge.annotateWithFastNLP(text)
+                val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(url))
+                val json = ConverterUtils.toJSON(mentions)
+                complete(json)
             }
           } ~
           // shuts down the server

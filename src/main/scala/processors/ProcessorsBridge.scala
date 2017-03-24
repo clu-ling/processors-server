@@ -14,7 +14,7 @@ object ProcessorsBridge {
   // initialize a processor
   // withDiscourse is disabled to control memory consumption
   lazy val fastnlp = new FastNLPProcessor(withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
-  lazy val bionlp = new BioNLPProcessor(withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
+  lazy val bionlp = new BioNLPProcessor(withChunks = false, withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
 
   val defaultProc = fastnlp
 
@@ -27,11 +27,11 @@ object ProcessorsBridge {
   def annotate(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, defaultProc)
   def annotateWithFastNLP(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, fastnlp)
   def annotateWithBioNLP(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, bionlp)
-  def toAnnotatedDocument(sentences: Seq[String], proc: Processor): Document = proc.annotateFromSentences(sentences, true)
+  def toAnnotatedDocument(sentences: Seq[String], proc: Processor): Document = proc.annotateFromSentences(sentences, keepText = true)
 
   // convert processors document to a json-serializable format
   def toAnnotatedDocument(text: String, proc: Processor): Document = {
-    proc.annotate(text)
+    proc.annotate(text, keepText = true)
   }
 
   def toSentimentScores(text: String): SentimentScores = {

@@ -7,7 +7,7 @@ import processors.api
 
 class TestConverterUtils extends FlatSpec with Matchers {
 
-  "proccessors.Mention" should "convert to api.Mention" in {
+  "proccessors-server" should "extract Mentions" in {
     val text = "Homer Simpson is a named entity."
     val rules =
       """
