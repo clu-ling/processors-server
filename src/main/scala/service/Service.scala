@@ -13,7 +13,7 @@ import org.json4s.JsonDSL._
 import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.JsonAST.{JNothing, JString}
-import org.json4s.{DefaultFormats, Formats, JValue, jackson, native}
+import org.json4s.{DefaultFormats, Formats, JValue, native}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContextExecutor
 import com.typesafe.config.Config
@@ -21,7 +21,7 @@ import com.typesafe.config.Config
 
 trait Service extends Json4sSupport {
 
-  implicit val serialization = jackson.Serialization // or native.Serialization
+  implicit val serialization = native.Serialization
   implicit val formats = DefaultFormats
 
   implicit val system: ActorSystem
