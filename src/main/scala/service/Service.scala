@@ -187,7 +187,7 @@ trait Service extends Json4sSupport {
                 val mentions = ProcessorsBridge.getMentions(document, rules)
                 val json = ConverterUtils.toJSON(mentions)
                 complete(json)
-              case twu if twu \ "text" != JNothing && twu \ "rules" != JNothing =>
+              case twu if twu \ "text" != JNothing && twu \ "url" != JNothing =>
                 logger.info(s"Odin endpoint received TextWithRulesURL")
                 val text = (twu \ "text").extract[String]
                 val url = (twu \ "url").extract[String]
