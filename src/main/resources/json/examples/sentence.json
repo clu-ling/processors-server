@@ -38,19 +38,6 @@
     51,
     52
   ],
-  "lemmas": [
-    "we",
-    "do",
-    "not",
-    "make",
-    "mistake",
-    ",",
-    "just",
-    "happy",
-    "little",
-    "accident",
-    "."
-  ],
   "tags": [
     "PRP",
     "VBP",
@@ -62,6 +49,19 @@
     "JJ",
     "JJ",
     "NNS",
+    "."
+  ],
+  "lemmas": [
+    "we",
+    "do",
+    "not",
+    "make",
+    "mistake",
+    ",",
+    "just",
+    "happy",
+    "little",
+    "accident",
     "."
   ],
   "entities": [
@@ -77,61 +77,146 @@
     "O",
     "O"
   ],
-  "dependencies": {
-    "edges": [
-      {
-        "destination": 0,
-        "source": 3,
-        "relation": "nsubj"
-      },
-      {
-        "destination": 1,
-        "source": 3,
-        "relation": "aux"
-      },
-      {
-        "destination": 2,
-        "source": 3,
-        "relation": "neg"
-      },
-      {
-        "destination": 4,
-        "source": 3,
-        "relation": "dobj"
-      },
-      {
-        "destination": 5,
-        "source": 3,
-        "relation": "punct"
-      },
-      {
-        "destination": 9,
-        "source": 3,
-        "relation": "dep"
-      },
-      {
-        "destination": 10,
-        "source": 3,
-        "relation": "punct"
-      },
-      {
-        "destination": 6,
-        "source": 7,
-        "relation": "advmod"
-      },
-      {
-        "destination": 7,
-        "source": 9,
-        "relation": "amod"
-      },
-      {
-        "destination": 8,
-        "source": 9,
-        "relation": "amod"
-      }
-    ],
-    "roots": [
-      3
-    ]
+  "norms": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+  ],
+  "chunks": [
+    "B-NP",
+    "B-VP",
+    "I-VP",
+    "I-VP",
+    "B-NP",
+    "O",
+    "B-NP",
+    "I-NP",
+    "I-NP",
+    "I-NP",
+    "O"
+  ],
+  "graphs": {
+    "stanford-basic": {
+      "edges": [
+        {
+          "source": 3,
+          "destination": 0,
+          "relation": "nsubj"
+        },
+        {
+          "source": 3,
+          "destination": 1,
+          "relation": "aux"
+        },
+        {
+          "source": 3,
+          "destination": 2,
+          "relation": "neg"
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "relation": "dobj"
+        },
+        {
+          "source": 3,
+          "destination": 5,
+          "relation": "punct"
+        },
+        {
+          "source": 3,
+          "destination": 9,
+          "relation": "dep"
+        },
+        {
+          "source": 3,
+          "destination": 10,
+          "relation": "punct"
+        },
+        {
+          "source": 7,
+          "destination": 6,
+          "relation": "advmod"
+        },
+        {
+          "source": 9,
+          "destination": 7,
+          "relation": "amod"
+        },
+        {
+          "source": 9,
+          "destination": 8,
+          "relation": "amod"
+        }
+      ],
+      "roots": [
+        3
+      ]
+    },
+    "stanford-collapsed": {
+      "edges": [
+        {
+          "source": 3,
+          "destination": 0,
+          "relation": "nsubj"
+        },
+        {
+          "source": 3,
+          "destination": 1,
+          "relation": "aux"
+        },
+        {
+          "source": 3,
+          "destination": 2,
+          "relation": "neg"
+        },
+        {
+          "source": 3,
+          "destination": 4,
+          "relation": "dobj"
+        },
+        {
+          "source": 3,
+          "destination": 5,
+          "relation": "punct"
+        },
+        {
+          "source": 3,
+          "destination": 9,
+          "relation": "dep"
+        },
+        {
+          "source": 3,
+          "destination": 10,
+          "relation": "punct"
+        },
+        {
+          "source": 7,
+          "destination": 6,
+          "relation": "advmod"
+        },
+        {
+          "source": 9,
+          "destination": 7,
+          "relation": "amod"
+        },
+        {
+          "source": 9,
+          "destination": 8,
+          "relation": "amod"
+        }
+      ],
+      "roots": [
+        3
+      ]
+    }
   }
 }

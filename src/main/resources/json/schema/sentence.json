@@ -24,19 +24,19 @@
       },
       "id": "endOffsets"
     },
-    "lemmas": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "id": "lemmas"
-    },
     "tags": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "id": "tags"
+    },
+    "lemmas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "lemmas"
     },
     "entities": {
       "type": "array",
@@ -45,40 +45,122 @@
       },
       "id": "entities"
     },
-    "dependencies": {
+    "norms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "norms"
+    },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "id": "chunks"
+    },
+    "graphs": {
       "type": "object",
       "properties": {
-        "edges": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "destination": {
-                "type": "integer",
-                "id": "destination"
+        "stanford-basic": {
+          "type": "object",
+          "properties": {
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "integer",
+                    "id": "source"
+                  },
+                  "destination": {
+                    "type": "integer",
+                    "id": "destination"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "id": "relation"
+                  }
+                },
+                "id": "9",
+                "required": [
+                  "source",
+                  "destination",
+                  "relation"
+                ]
               },
-              "source": {
-                "type": "integer",
-                "id": "source"
-              },
-              "relation": {
-                "type": "string",
-                "id": "relation"
-              }
+              "id": "edges"
             },
-            "id": "9"
+            "roots": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "id": "roots"
+            }
           },
-          "id": "edges"
+          "id": "stanford-basic",
+          "required": [
+            "edges",
+            "roots"
+          ]
         },
-        "roots": {
-          "type": "array",
-          "items": {
-            "type": "integer"
+        "stanford-collapsed": {
+          "type": "object",
+          "properties": {
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "integer",
+                    "id": "source"
+                  },
+                  "destination": {
+                    "type": "integer",
+                    "id": "destination"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "id": "relation"
+                  }
+                },
+                "id": "9",
+                "required": [
+                  "source",
+                  "destination",
+                  "relation"
+                ]
+              },
+              "id": "edges"
+            },
+            "roots": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "id": "roots"
+            }
           },
-          "id": "roots"
+          "id": "stanford-collapsed",
+          "required": [
+            "edges",
+            "roots"
+          ]
         }
       },
-      "id": "dependencies"
+      "id": "graphs",
+      "required": [
+        "stanford-basic",
+        "stanford-collapsed"
+      ]
     }
-  }
+  },
+  "required": [
+    "words",
+    "startOffsets",
+    "endOffsets"
+  ]
 }
