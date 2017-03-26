@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
 
-Current version: 2.9
+Current version: 3.0
 
 # processors-server
 
@@ -57,12 +57,12 @@ The following services are available:
 
 Text can be annotated by sending a POST request containing `json` with a `"text"` field to one of the following `annotate` endpoints (see [example](src/main/resources/json/examples/message.json)).
 
-You may also send text already segmented into sentences by posting a [`SentencesMessage`](src/main/resources/json/schema/sentences-message.json) (see [example](src/main/resources/json/examples/sentences-message.json)) to the same `annotate` endpoint.  This is just a `json` frame with a `"sentences"` field pointing to an array of strings.
+You may also send text already segmented into sentences by posting a [`SegmentedMessage`](src/main/resources/json/schema/segmented-message.json) (see [example](src/main/resources/json/examples/segmented-message.json)) to the same `annotate` endpoint.  This is just a `json` frame with a `"sentences"` field pointing to an array of strings.
 
 #### `FastNLPProcessor`
 
-- `http://localhost:<your port here>/annotate`
-- `http://localhost:<your port here>/fastnlp/annotate`
+- `http://localhost:<your port here>/api/annotate`
+- `http://localhost:<your port here>/api/fastnlp/annotate`
 
 #### `BioNLPProcessor`
 
@@ -70,18 +70,18 @@ The resources (model files) for this processor are loaded lazily when the first 
 
 Text can be annotated by sending a POST request containing `json` with a `"text"` field to the following endpoint (see [example](src/main/resources/json/examples/message.json)):
 
-- `http://localhost:<your port here>/bionlp/annotate`
+- `http://localhost:<your port here>/api/bionlp/annotate`
 
 ### Sentiment analysis with `CoreNLP`
 
-- `http://localhost:<your port here>/corenlp/sentiment/score`
+- `http://localhost:<your port here>/api/corenlp/sentiment/score`
   - Requires one of the following`json` POST requests:
     - [`Document`](src/main/resources/json/schema/document.json) (see [example](src/main/resources/json/examples/document.json))
     - [`Sentence`](src/main/resources/json/schema/sentence.json) (see [example](src/main/resources/json/examples/sentence.json))
     - [`Message`](src/main/resources/json/schema/message.json) (see [example](src/main/resources/json/examples/message.json))
 
 You can also send text that has already been segmented into sentences:
-  - post a [`SentencesMessage`](src/main/resources/json/schema/sentences-message.json) (see [example](src/main/resources/json/examples/sentences-message.json)) to `http://localhost:<your port here>/corenlp/sentiment/score/segmented`
+  - post a [`SegmentedMessage`](src/main/resources/json/schema/segmented-message.json) (see [example](src/main/resources/json/examples/segmented-message.json)) to `http://localhost:<your port here>/api/corenlp/sentiment/score/segmented`
 
 Responses will be [`SentimentScores`](src/main/resources/json/schema/scores.json) (see [example](src/main/resources/json/examples/scores.json))
 
@@ -97,13 +97,13 @@ Responses will be [`SentimentScores`](src/main/resources/json/schema/scores.json
 For more info on `Odin`, see [the manual](http://arxiv.org/pdf/1509.07513v1.pdf)
 # Responses
 
-A `POST` to an `/annotate` endpoint will return a `Document` of the form specified in [`document.json`](src/main/resources/json/schema/document.json).
+A `POST` to an `/api/annotate` endpoint will return a `Document` of the form specified in [`document.json`](src/main/resources/json/schema/document.json).
 
 ### An example using `cURL`
 
 To see it in action, you can try to `POST` `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:   
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/annotate
+curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/api/annotate
 ```
 
 ```json
