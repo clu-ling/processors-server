@@ -13,5 +13,6 @@ trait Message
 
 case class TextMessage(text: String) extends Message with Text
 
-case class SentencesMessage(sentences: Seq[String]) extends Message
+/** Container for text that has already been split into sentences.  `segments` is used instead of `sentences` to avoid ambiguities with [[org.clulab.processors.Document]] json */
+case class SegmentedMessage(segments: Seq[String]) extends Message
 

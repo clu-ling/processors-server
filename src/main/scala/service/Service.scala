@@ -83,9 +83,9 @@ trait Service extends Json4sSupport {
         } ~
           // annotate from sentences
           path("api" / "annotate") {
-            entity(as[api.SentencesMessage]) { sm =>
+            entity(as[api.SegmentedMessage]) { sm =>
               logger.info(s"Default Processor received POST with text already split into sentences...")
-              val processorsDoc = ProcessorsBridge.annotate(sm.sentences)
+              val processorsDoc = ProcessorsBridge.annotate(sm.segments)
               val json = ConverterUtils.toJSON(processorsDoc)
               complete(json)
             }
@@ -100,9 +100,9 @@ trait Service extends Json4sSupport {
           } ~
           // annotate from sentences
           path("api" / "fastnlp" / "annotate") {
-            entity(as[api.SentencesMessage]) { sm =>
+            entity(as[api.SegmentedMessage]) { sm =>
               logger.info(s"FastNLPProcessor received POST with text already segmented into sentences ")
-              val processorsDoc = ProcessorsBridge.annotateWithFastNLP(sm.sentences)
+              val processorsDoc = ProcessorsBridge.annotateWithFastNLP(sm.segments)
               val json = ConverterUtils.toJSON(processorsDoc)
               complete(json)
             }
@@ -117,40 +117,46 @@ trait Service extends Json4sSupport {
           } ~
           // annotate from sentences
           path("api" / "bionlp" / "annotate") {
-            entity(as[api.SentencesMessage]) { sm =>
+            entity(as[api.SegmentedMessage]) { sm =>
               logger.info(s"BioNLPProcessor received POST with text already segmented into sentences ")
-              val processorsDoc = ProcessorsBridge.annotateWithBioNLP(sm.sentences)
+              val processorsDoc = ProcessorsBridge.annotateWithBioNLP(sm.segments)
               val json = ConverterUtils.toJSON(processorsDoc)
               complete(json)
             }
           } ~
           // Handle sentiment analysis of text
           path("api" / "sentiment" / "corenlp" / "score") {
-            entity(as[api.TextMessage]) { m =>
-              logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
-              val scores = ProcessorsBridge.toSentimentScores(m.text)
-              complete(scores)
-            }
-          } ~
-          path("api" / "sentiment" / "corenlp" / "score") {
             entity(as[JValue]) {
+              case tm: JValue if tm \ "text" != JNothing =>
+                val m = tm.extract[api.TextMessage]
+                logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
+                val scores = ProcessorsBridge.toSentimentScores(m.text)
+                complete(scores)
+              // FIXME: this is conflict with sending a Sentence...perhaps rename?
+              case sm: JValue if sm \ "segments" != JNothing =>
+                val m = sm.extract[api.SegmentedMessage]
+                logger.info(s"CoreNLPSentimentAnalyzer received POST with ${m.segments.size} sentences")
+                val scores = ProcessorsBridge.toSentimentScores(m.segments)
+                complete(scores)
               // Handle sentiment analysis of a Sentence
               case s: JValue if s \ "words" != JNothing =>
                 val sentence = ConverterUtils.toProcessorsSentence(s)
+                logger.info(s"CoreNLPSentimentAnalyzer received POST of Sentence")
                 val scores = ProcessorsBridge.toSentimentScores(sentence)
                 complete(scores)
               // Handle sentiment analysis of a Document
               case d: JValue if d \ "sentences" != JNothing =>
                 val document = ConverterUtils.toProcessorsDocument(d)
+                logger.info(s"CoreNLPSentimentAnalyzer received POST of Document")
                 val scores = ProcessorsBridge.toSentimentScores(document)
                 complete(scores)
             }
           } ~
           // Handle sentiment analysis of a seq of text
           path("api" / "sentiment" / "corenlp" / "score" / "segmented") {
-            entity(as[api.SentencesMessage]) { sm =>
+            entity(as[api.SegmentedMessage]) { sm =>
               logger.info(s"CoreNLPSentimentAnalyzer received POST with text already segmented into sentences")
-              val sentences: Seq[String] = sm.sentences
+              val sentences: Seq[String] = sm.segments
               val scores = ProcessorsBridge.toSentimentScores(sentences)
               complete(scores)
             }
