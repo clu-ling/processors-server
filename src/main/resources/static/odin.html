@@ -113,7 +113,7 @@ Barack Hussein Obama II (born August 4, 1961) is an American politician serving 
         var address = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
         console.log(address);
         xhr = new XMLHttpRequest();
-        var url = address + "/odin/extract";
+        var url = address + "/api/odin/extract";
         console.log(url);
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-type", "application/json");

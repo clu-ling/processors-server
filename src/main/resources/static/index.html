@@ -36,33 +36,33 @@
       <tbody>
         <!-- Annotate -->
         <tr>
-          <td><code>/annotate</code></td>
+          <td><code>/api/annotate</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
         </tr>
         <tr>
-          <td><code>/fastnlp/annotate</code></td>
+          <td><code>/api/fastnlp/annotate</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
         </tr>
         <tr>
-          <td><code>/bionlp/annotate</code></td>
+          <td><code>/api/bionlp/annotate</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
         </tr>
         <!-- Sentiment -->
         <tr>
-          <td><code>/sentiment/corenlp/score</code></td>
+          <td><code>/api/sentiment/corenlp/score</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a>, <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/sentence.json"><code>Sentence</code></a>, or <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text": ""}</code></a></td>
           <td>Produces a sentiment score for each sentence using <code>FastNLPProcessor</code>.  Responses are of the form <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/scores.json"><code>{"scores": []}<code></a></td>
         </tr>
         <!-- Odin -->
         <tr>
-          <td><code>/odin/extract</code></td>
+          <td><code>/api/odin/extract</code></td>
           <td><code>POST</code></td>
           <td>Recieves a <code>POST</code> of one of the following forms:
               <ol>
