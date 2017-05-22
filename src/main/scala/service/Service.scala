@@ -175,31 +175,27 @@ trait Service extends Json4sSupport {
                 logger.info(s"Odin endpoint received DocumentWithRulesURL")
                 val document = ConverterUtils.toProcessorsDocument(dwu \ "document")
                 val url = (dwu \ "url").extract[String]
-                val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(url))
-                val json = ConverterUtils.toJSON(mentions)
+                val json = ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
                 complete(json)
               case dwr if dwr \ "document" != JNothing && dwr \ "rules" != JNothing =>
                 logger.info(s"Odin endpoint received DocumentWithRules")
                 val document = ConverterUtils.toProcessorsDocument(dwr \ "document")
                 val rules = (dwr \ "rules").extract[String]
-                val mentions = ProcessorsBridge.getMentions(document, rules)
-                val json = ConverterUtils.toJSON(mentions)
+                val json = ProcessorsBridge.getMentionsAsJSON(document, rules)
                 complete(json)
               case twr if twr \ "text" != JNothing && twr \ "rules" != JNothing =>
                 logger.info(s"Odin endpoint received TextWithRules")
                 val text = (twr \ "text").extract[String]
                 val rules = (twr \ "rules").extract[String]
                 val document = ProcessorsBridge.annotateWithFastNLP(text)
-                val mentions = ProcessorsBridge.getMentions(document, rules)
-                val json = ConverterUtils.toJSON(mentions)
+                val json = ProcessorsBridge.getMentionsAsJSON(document, rules)
                 complete(json)
               case twu if twu \ "text" != JNothing && twu \ "url" != JNothing =>
                 logger.info(s"Odin endpoint received TextWithRulesURL")
                 val text = (twu \ "text").extract[String]
                 val url = (twu \ "url").extract[String]
                 val document = ProcessorsBridge.annotateWithFastNLP(text)
-                val mentions = ProcessorsBridge.getMentions(document, ConverterUtils.urlToRules(url))
-                val json = ConverterUtils.toJSON(mentions)
+                val json = ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
                 complete(json)
             }
           } ~

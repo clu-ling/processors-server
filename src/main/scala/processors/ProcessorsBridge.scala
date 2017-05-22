@@ -7,7 +7,9 @@ import org.clulab.processors.corenlp.CoreNLPSentimentAnalyzer
 import org.clulab.processors.bionlp.BioNLPProcessor
 import org.clulab.processors.fastnlp.FastNLPProcessor
 import org.clulab.processors.shallownlp.ShallowNLPProcessor
+import org.json4s.JsonAST.JValue
 
+import scala.util.{Failure, Success, Try}
 
 object ProcessorsBridge {
 
@@ -60,5 +62,12 @@ object ProcessorsBridge {
     val engine = ExtractorEngine(rules)
     val odinMentions = engine.extractFrom(doc)
     odinMentions
+  }
+
+  def getMentionsAsJSON(doc: Document, rules: String): JValue = {
+    Try(getMentions(doc, rules)) match {
+      case Success(mentions) => ConverterUtils.toJSON(mentions)
+      case Failure(error) => ConverterUtils.toJSON(error)
+    }
   }
 }

@@ -6,7 +6,7 @@ import org.clulab.processors.{Document, Sentence}
 import org.clulab.serialization.json.JSONSerializer
 import org.clulab.serialization.json._
 import org.json4s.JValue
-
+import org.json4s.JsonDSL._
 import scala.io.Source
 import utils._
 
@@ -35,4 +35,5 @@ object ConverterUtils extends LazyLogging {
 
   def toJSON(mentions: Seq[Mention]): JValue = mentions.jsonAST
 
+  def toJSON(error: Throwable): JValue = "error" -> error.getMessage
 }
