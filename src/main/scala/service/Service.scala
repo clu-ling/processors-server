@@ -1,19 +1,21 @@
 package service
 
-import java.io.File
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
-import de.heikoseeberger.akkahttpjson4s.Json4sSupport
+import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport
+
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import processors.{ConverterUtils, ProcessorsBridge, api}
 import org.clulab.processors
-import org.json4s.JsonDSL._
+
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s._
-import org.json4s.native.JsonMethods._
-import org.json4s.JsonAST.{JNothing, JString}
-import org.json4s.{DefaultFormats, Formats, JValue, native}
+import org.json4s.JsonAST.{ JNothing }
+import org.json4s.{DefaultFormats, JValue, native}
+
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContextExecutor
 import com.typesafe.config.Config
@@ -21,6 +23,7 @@ import com.typesafe.config.Config
 
 trait Service extends Json4sSupport {
 
+  implicit val htmlMarshaller = ScalaXmlSupport.nodeSeqMarshaller(MediaTypes.`text/html` )
   implicit val serialization = native.Serialization
   implicit val formats = DefaultFormats
 

@@ -1,6 +1,6 @@
 name := "processors-server"
 
-version := "3.0.1"
+version := "3.0.2"
 
 scalaVersion := "2.11.8"
 
@@ -32,7 +32,7 @@ libraryDependencies ++= {
     "com.typesafe"                        %  "config"                                % "1.3.0",
     "org.json4s"                         %%  "json4s-core"                           % json4sV,
     "org.json4s"                         %%  "json4s-native"                         % json4sV,
-    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.14.0",
+    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.16.1",
     // Twirl
     //"com.typesafe.play"                  %% "twirl-api"                              % twirlV,
     // AKKA
@@ -43,6 +43,7 @@ libraryDependencies ++= {
     "com.typesafe.akka"                  %%  "akka-http-core"                        % akkaHTTPV,
     "com.typesafe.akka"                  %%  "akka-http"                             % akkaHTTPV,
     "com.typesafe.akka"                  %%  "akka-http-testkit"                     % akkaHTTPV,
+    "com.typesafe.akka"                  %%  "akka-http-xml"                         % akkaHTTPV,
     // processors
     "org.clulab"                         %%  "processors-main"                       % procV,
     "org.clulab"                         %%  "processors-corenlp"                    % procV,
