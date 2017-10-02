@@ -1,0 +1,17 @@
+version: "3"
+services:
+  # processors-server
+  procserv:
+    # built via sbt plugin
+    image: myedibleenso/processors-server:latest
+    ports:            ## publish ports
+      # local:server (docker image)
+      - "8888:8888"
+    labels:
+      myedibleenso.description: "processors-server"
+    environment:
+      - _JAVA_OPTIONS="-Xmx3G"
+#    resources:
+#      limits:
+#        cpus: '1'
+#        memory: 8g

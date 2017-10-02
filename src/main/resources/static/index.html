@@ -2,21 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="author" content="Gus Hahn-Powell"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>processors-server</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/vendor.min.css">
+    <link rel="stylesheet" href="/css/app.min.css">
     <!-- theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
 </head>
 <body>
-<div class="container theme-showcase" role="main">
+    <div class="outer container">
 
     <!-- jumbotron -->
     <div class="jumbotron">
         <h1><code>processors-server</code></h1>
-        <div><h3 id="version"><h3></div>
+        <div><h3 id="version"></h3></div>
         <div>
           <p>Web interface to the CLU Lab's <a href="https://github.com/clulab/processors"><code>processors</code></a> NLP library</p>
         </div>
@@ -64,7 +66,7 @@
         <tr>
           <td><code>/api/odin/extract</code></td>
           <td><code>POST</code></td>
-          <td>Recieves a <code>POST</code> of one of the following forms:
+          <td>Receives a <code>POST</code> of one of the following forms:
               <ol>
                 <li><code>{"rules": "", "text": ""}</code></li>
                 <li><code>{"rules": "", "document": {}}</code></li>
@@ -84,7 +86,6 @@
       </tbody>
     </table>
 
-
     <h2>Demos</h2>
     <table class="table table-striped">
     <thead>
@@ -96,19 +97,18 @@
     <tbody>
       <!-- Odin -->
       <tr>
-        <td><a id="odin-demo" href="#">Odin</a></td>
+        <td><a id="odin-demo" href="/odin/demo">Odin</a></td>
         <td>A demonstration of IE with Odin</td>
       </tr>
     </tbody>
   </table>
   </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="/js/bundle.min.js"></script>
   <script "text/javascript">
     $('document').ready(function () {
       // Retrieve version
       $.ajax({
-        url: location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + "/version",
+        url: "/version",
         method: "POST"
       }).done(function( data ) {
         // console.log(JSON.stringify(data));
@@ -116,15 +116,14 @@
         // console.log(version);
         $('#version').text("v" + version);
       });
-
-      // Build link to Odin demo
-      $('#odin-demo').click(
-        function(){
-          service = location.protocol + '//' + location.hostname + (location.port ? ':'+location.port: '') + "/odin/demo";
-          var win = window.open(service, '_blank');
-          win.focus();
-      });
     });
   </script>
+
+  <div class="page-footer navbar navbar-default navbar-fixed-bottom">
+      <p>© 2015 - <code>processor-server</code> was created by <a href="https:/github.com/myedibleenso" rel="author">ghp</a> to interface with the <a href="http://clulab.org">CLU Lab's</a> <a href="https:/github.com/clulab/processors"><code>processors</code> library</a></p>
+      <p>Found a bug?  <a href="https://github.com/myedibleenso/processors-server/issues">Please file an issue</a></p>
+  </div>
+</div>
+
 </body>
 </html>

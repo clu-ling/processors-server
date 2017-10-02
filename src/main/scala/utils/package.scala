@@ -1,19 +1,18 @@
 import scala.annotation.tailrec
+import scala.language.implicitConversions
 import scala.util.matching.Regex
 
 
 package object utils {
 
-  /** for keeping track of information related to the server **/
-  case class Description(version: String)
-
-  case class RichRegex(override val regex: String) extends Regex(regex) {
-    def matches(s: String) = this.pattern.matcher(s).matches
-  }
-
   implicit def toRichRegex(regex: Regex): RichRegex = RichRegex(regex.toString)
 
-  def projectVersion: String = getClass.getPackage.getImplementationVersion
+  def projectVersion: String = processors.api.BuildInfo.version
+  def commit: String = {
+    val c = processors.api.BuildInfo.gitHeadCommit
+    val state = if (processors.api.BuildInfo.gitUncommittedChanges) "-DIRTY" else ""
+    s"$c$state"
+  }
 
   def mkDescription: Description = Description(projectVersion)
 
@@ -32,4 +31,5 @@ package object utils {
     case unknown :: tail =>
       throw new Exception(s"""Unknown option "$unknown"""")
   }
+
 }
