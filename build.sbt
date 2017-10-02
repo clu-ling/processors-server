@@ -1,6 +1,6 @@
 name := "processors-server"
 
-version := "3.0.2"
+version := "3.1.0"
 
 scalaVersion := "2.11.8"
 
@@ -15,24 +15,34 @@ outputStrategy := Some(StdoutOutput)
 
 organization  := "myedibleenso"
 
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+scalacOptions := Seq(
+  "-feature",
+  "-unchecked",
+  "-deprecation",
+  "-Xlint",
+  "-Yno-adapted-args",
+  "-Ywarn-dead-code",
+  // "-Ywarn-value-discard",
+  "-Ywarn-unused",
+  "-encoding", "utf8"
+)
 
 //logLevel := Level.Info
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= {
-  val akkaV = "2.4.17"
-  val akkaHTTPV = "10.0.5"
-  val json4sV = "3.5.0"
-  val procV = "6.0.5"
+  val akkaV = "2.5.4"
+  val akkaHTTPV = "10.0.10"
+  val json4sV = "3.5.3"
+  val procV = "6.1.4-SNAPSHOT"
   //val twirlV = "1.2.0"
 
   Seq(
     "com.typesafe"                        %  "config"                                % "1.3.0",
     "org.json4s"                         %%  "json4s-core"                           % json4sV,
-    "org.json4s"                         %%  "json4s-native"                         % json4sV,
-    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.16.1",
+    "org.json4s"                         %%  "json4s-jackson"                        % json4sV,
+    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.17.0",
     // Twirl
     //"com.typesafe.play"                  %% "twirl-api"                              % twirlV,
     // AKKA
@@ -45,9 +55,11 @@ libraryDependencies ++= {
     "com.typesafe.akka"                  %%  "akka-http-testkit"                     % akkaHTTPV,
     "com.typesafe.akka"                  %%  "akka-http-xml"                         % akkaHTTPV,
     // processors
-    "org.clulab"                         %%  "processors-main"                       % procV,
-    "org.clulab"                         %%  "processors-corenlp"                    % procV,
-    "org.clulab"                         %%  "processors-models"                     % procV,
+    "org.clulab"                         %% "processors-main"                        % procV,
+    "org.clulab"                         %% "processors-corenlp"                     % procV,
+    "org.clulab"                         %% "processors-odin"                        % procV,
+    "org.clulab"                         %% "processors-modelsmain"                  % procV,
+    "org.clulab"                         %% "processors-modelscorenlp"               % procV,
     // testing
     "org.specs2"                         %%  "specs2-core"                           % "2.3.11" % "test",
     "com.typesafe.akka"                  %%  "akka-testkit"                          % akkaV    % "test",

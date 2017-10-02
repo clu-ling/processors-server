@@ -46,7 +46,7 @@ object ServerConfig {
     host -> defaultHostName
   )
 
-  def initializeResources: Unit = {
+  def initializeResources(): Unit = {
     val _ = processors.ProcessorsBridge.defaultProc.annotate("blah")
   }
 }
