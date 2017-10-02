@@ -2,7 +2,7 @@ sudo: required
 dist: trusty
 language: scala
 scala:
-  - 2.11.6
+  - 2.11.11
 branches:
   only:
     - master
