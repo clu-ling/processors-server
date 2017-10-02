@@ -1,0 +1,20 @@
+body {
+    /* Margin bottom by footer height */
+    margin-left: 20px;
+}
+
+.outer {
+    margin-bottom: 100px;
+}
+
+.navbar-fixed-bottom {
+    padding-top: 25px;
+}
+
+.page-footer {
+    text-align: center;
+}
+
+textarea.rules {
+    font-family:"Courier New", Courier, monospace;
+}

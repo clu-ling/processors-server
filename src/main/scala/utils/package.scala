@@ -7,7 +7,12 @@ package object utils {
 
   implicit def toRichRegex(regex: Regex): RichRegex = RichRegex(regex.toString)
 
-  def projectVersion: String = getClass.getPackage.getImplementationVersion
+  def projectVersion: String = processors.api.BuildInfo.version
+  def commit: String = {
+    val c = processors.api.BuildInfo.gitHeadCommit
+    val state = if (processors.api.BuildInfo.gitUncommittedChanges) "-DIRTY" else ""
+    s"$c$state"
+  }
 
   def mkDescription: Description = Description(projectVersion)
 

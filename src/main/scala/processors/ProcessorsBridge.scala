@@ -21,7 +21,8 @@ object ProcessorsBridge {
   lazy val bionlp = new BioNLPProcessor(withChunks = false, withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
   lazy val clu = new CluProcessor()
 
-  val defaultProc = clu
+  // fastnlp has an NER component plugged in
+  val defaultProc = fastnlp
 
   /** annotate text */
   def annotate(text: String): Document = toAnnotatedDocument(text, defaultProc)

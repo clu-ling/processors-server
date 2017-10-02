@@ -55,15 +55,41 @@ trait Service extends Json4sSupport {
           val html =
             <html>
               <body>
-                <h1><code>processors-server</code> version {utils.projectVersion}</h1>
+                <h1><code>processors-server</code> version {utils.projectVersion} ({utils.commit})</h1>
               </body>
             </html>
           complete(html)
         }
       } ~
+      // buildInfo
+      path("buildinfo") {
+        get {
+          complete(api.BuildInfo.toJson)
+        }
+      } ~
       // Demo
       path("odin" / "demo") {
         getFromResource("static/odin.html")
+      } ~
+      // resources
+      path("favicon.ico") {
+        val resourcePath = s"static/images/favicon.ico"
+        getFromResource(resourcePath)
+      } ~
+      path("js" / ".*".r) { resource: String =>
+        val resourcePath = s"static/js/$resource"
+        println(resource)
+        getFromResource(resourcePath)
+      } ~
+      path("css" / ".*".r) { resource: String =>
+        val resourcePath = s"static/css/$resource"
+        println(resource)
+        getFromResource(resourcePath)
+      } ~
+      path("fonts" / ".*".r) { resource: String =>
+        val resourcePath = s"static/fonts/$resource"
+        println(resource)
+        getFromResource(resourcePath)
       } ~
       path("images" / ".*".r) { imageResource: String =>
         val imagePath = s"static/images/$imageResource"

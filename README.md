@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
 
-Current version: 3.0.2
+Current version: 3.1.0
 
 # processors-server
 
@@ -13,7 +13,7 @@ An `akka-http` server exposing a REST API for text annotation via the [`processo
 2. [`sbt`](http://www.scala-sbt.org/download.html)
 
 ## How is this useful?
-This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently there are services for using `processors`' `FastNLPProcessor` (a wrapper for `CoreNLP`) and `BioNLPProcessor`.
+This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently there are services for using `processors`' `CluProcessor`, `FastNLPProcessor` (a wrapper for `CoreNLP`) and `BioNLPProcessor`.
 
 ## Running `processors-server`
 
@@ -33,9 +33,18 @@ By default, the server will run on port `8888` and `localhost`, though you can s
 ```bash
 sbt "runMain NLPServer --host <your favorite host here> --port <your favorite port here>"
 ```
+
+## Building a docker container
+
+```
+sbt docker
+```
+
+This will create a container named `myedibleenso/processors-server:latest`, which you can run with `docker-compose up` using the included `docker-compose.yml` file.
+
 ## Logging
 
-A server log is written to `.processors-server.log` in home directory of the user who launches the server.
+A server log is written to `processors-server.log` in home directory of the user who launches the server.
 
 # Communicating with the server
 
@@ -58,6 +67,10 @@ The following services are available:
 Text can be annotated by sending a POST request containing `json` with a `"text"` field to one of the following `annotate` endpoints (see [example](src/main/resources/json/examples/message.json)).
 
 You may also send text already segmented into sentences by posting a [`SegmentedMessage`](src/main/resources/json/schema/segmented-message.json) (see [example](src/main/resources/json/examples/segmented-message.json)) to the same `annotate` endpoint.  This is just a `json` frame with a `"sentences"` field pointing to an array of strings.
+
+#### `CluProcessor`
+
+- `http://localhost:<your port here>/api/clu/annotate`
 
 #### `FastNLPProcessor`
 
@@ -339,9 +352,9 @@ Examples of each can be found at [`src/main/resources/json/examples`](src/main/r
 
 You can shut down the server by posting anything to `/shutdown`
 
-## Checking on the server's status
+## Checking the server's build
 
-send a `GET` to `/status`
+send a `GET` to `/buildinfo`
 
 # `py-processors`
 If you're a Python user, you may be interested in using [`py-processors`](https://github.com/myedibleenso/py-processors) in your NLP project.

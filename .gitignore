@@ -16,3 +16,8 @@ project/plugins/project/
 .idea
 .scala_dependencies
 .worksheet
+
+# Minified frontend stuff
+src/main/resources/static/js
+src/main/resources/static/css
+src/main/resources/static/fonts
