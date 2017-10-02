@@ -115,7 +115,7 @@ libraryDependencies ++= {
   val akkaV = "2.5.4"
   val akkaHTTPV = "10.0.10"
   val json4sV = "3.5.3"
-  val procV = "6.1.4-SNAPSHOT"
+  val procV = "6.1.4"
 
   Seq(
     "com.typesafe"                        %  "config"                                % "1.3.0",
