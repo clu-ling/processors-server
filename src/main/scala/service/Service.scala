@@ -13,8 +13,8 @@ import org.clulab.processors
 
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s._
-import org.json4s.JsonAST.{ JNothing }
-import org.json4s.{ DefaultFormats, JValue, jackson }
+import org.json4s.JsonDSL._
+import org.json4s.{ DefaultFormats, JValue, JNothing, jackson }
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContextExecutor
@@ -64,7 +64,7 @@ trait Service extends Json4sSupport {
       // buildInfo
       path("buildinfo") {
         get {
-          complete(api.BuildInfo.toJson)
+          complete(api.jsonBuildInfo)
         }
       } ~
       // Demo

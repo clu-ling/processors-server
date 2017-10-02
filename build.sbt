@@ -29,7 +29,7 @@ lazy val npmSettings = Seq(
   npmWorkingDir := "ui",
   npmCompileCommands := "run all",
   npmTestCommands := "test",
-  npmCleanCommands := "clean"
+  npmCleanCommands := "run clean"
 )
 
 lazy val dockerSettings = Seq(
@@ -79,29 +79,33 @@ lazy val assemblySettings = Seq(
   }
 )
 
+lazy val buildInfoSettings = Seq(
+  buildInfoPackage := "processors.api",
+  buildInfoKeys := Seq[BuildInfoKey](
+    name, version, scalaVersion, sbtVersion, libraryDependencies, scalacOptions,
+    "gitCurrentBranch" -> { git.gitCurrentBranch.value },
+    "gitHeadCommit" -> { git.gitHeadCommit.value.getOrElse("") },
+    "gitHeadCommitDate" -> { git.gitHeadCommitDate.value.getOrElse("") },
+    "gitUncommittedChanges" -> { git.gitUncommittedChanges.value }
+  ),
+  buildInfoOptions += BuildInfoOption.BuildTime,
+  buildInfoOptions += BuildInfoOption.ToJson
+)
+
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(GitVersioning)
   .enablePlugins(sbtdocker.DockerPlugin)
   .enablePlugins(Npm)
+  .settings(buildInfoSettings)
   .settings(npmSettings)
   .settings(commonSettings)
   .settings(dockerSettings)
   .settings(assemblySettings)
   .settings(
     name := "processors-server",
-    aggregate in test := false,
-    buildInfoPackage := "processors.api",
-    buildInfoKeys := Seq[BuildInfoKey](
-    name, version, scalaVersion, sbtVersion, libraryDependencies, scalacOptions,
-    "gitCurrentBranch" -> { git.gitCurrentBranch.value },
-    "gitHeadCommit" -> { git.gitHeadCommit.value.getOrElse("") },
-    "gitHeadCommitDate" -> { git.gitHeadCommitDate.value.getOrElse("") },
-    "gitUncommittedChanges" -> { git.gitUncommittedChanges.value }
-    ),
-    buildInfoOptions += BuildInfoOption.BuildTime,
-    buildInfoOptions += BuildInfoOption.ToJson
-)
+    aggregate in test := false
+  )
 
 //logLevel := Level.Info
 
