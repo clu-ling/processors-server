@@ -42,6 +42,8 @@ sbt docker
 
 This will create a container named `myedibleenso/processors-server:latest`, which you can run with `docker-compose up` using the included `docker-compose.yml` file.
 
+You can find all of the official containers published on Docker Hub for this project in [this repo](https://hub.docker.com/r/myedibleenso/processors-server/). 
+
 ## Logging
 
 A server log is written to `processors-server.log` in home directory of the user who launches the server.
