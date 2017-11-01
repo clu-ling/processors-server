@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "colors --cyan \"no tests to run...\"",
-    "preall": "colors --white \" - \" --cyan \"Starting build process: Will clean, build, and copy to dist (../src/main/resources/static)\"",
+    "preall": "npm run update-install && colors --white \" - \" --cyan \"Starting build process: Will clean, build, and copy to dist (../src/main/resources/static)\"",
+    "preupdate-install": "echo \" - Installing/Updating NPM packages\"",
+    "update-install": "npm install",
     "postall": "colors --white \" - \" --cyan \"Build process finished\"",
     "all": "npm-run-all clean build dist",
     "preclean": "colors --white \" - \" --green \"Bundling sources\"",
