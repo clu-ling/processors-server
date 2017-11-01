@@ -1,8 +1,14 @@
-sudo: required
-dist: trusty
+sudo: enabled
 language: scala
 scala:
   - 2.11.11
 branches:
   only:
     - master
+
+env:
+  - TRAVIS_NODE_VERSION="8"
+
+install:
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+  - npm install
