@@ -9,6 +9,7 @@ package object api {
   implicit val formats = DefaultFormats
 
   val jsonBuildInfo: JValue = {
+    // format: off
     ("name" -> api.BuildInfo.name) ~
     ("version" -> api.BuildInfo.version) ~
     ("scalaVersion" -> api.BuildInfo.scalaVersion) ~
@@ -19,6 +20,7 @@ package object api {
     ("gitHeadCommit" -> api.BuildInfo.gitHeadCommit) ~
     ("gitHeadCommitDate" -> api.BuildInfo.gitHeadCommitDate) ~
     ("gitUncommittedChanges" -> api.BuildInfo.gitUncommittedChanges)
+    // format: on
   }
 
 }
