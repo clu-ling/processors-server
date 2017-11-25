@@ -18,7 +18,7 @@ package object utils {
 
   @throws(classOf[Exception])
   @tailrec
-  def buildArgMap(map : Map[String, String], args: List[String]): Map[String, String] = args match {
+  def buildArgMap(map: Map[String, String], args: List[String]): Map[String, String] = args match {
     case Nil => map
     // handle port
     case "--port" :: port :: tail =>

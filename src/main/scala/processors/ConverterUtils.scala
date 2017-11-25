@@ -38,3 +38,4 @@ object ConverterUtils extends LazyLogging {
 
   def toJSON(error: Throwable): JValue = "error" -> error.getMessage
 }
+

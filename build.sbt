@@ -14,7 +14,6 @@ lazy val commonSettings = Seq(
   name := "processors-server",
   organization := "myedibleenso",
   scalaVersion in ThisBuild := "2.11.11", // avoid warnings when compiling play project with -Ywarn-unused
-  version in ThisBuild := "3.1.0",
   // we want to use -Ywarn-unused-import most of the time
   scalacOptions ++= commonScalacOptions,
   scalacOptions += "-Ywarn-unused-import",
@@ -147,5 +146,3 @@ libraryDependencies ++= {
     "org.scalatest"                      %% "scalatest"                              % "2.2.6" % Test
   )
 }
-
-
