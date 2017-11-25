@@ -21,3 +21,6 @@ project/plugins/project/
 src/main/resources/static/js
 src/main/resources/static/css
 src/main/resources/static/fonts
+
+# package lock
+ui/package-lock.json

@@ -11,6 +11,8 @@ An `akka-http` server exposing a REST API for text annotation via the [`processo
 ## Requirements
 1. [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 2. [`sbt`](http://www.scala-sbt.org/download.html)
+3. [`node.js`](https://nodejs.org/en/)
+4. [`npm`](https://www.npmjs.com/get-npm)
 
 ## How is this useful?
 This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently there are services for using `processors`' `CluProcessor`, `FastNLPProcessor` (a wrapper for `CoreNLP`) and `BioNLPProcessor`.
