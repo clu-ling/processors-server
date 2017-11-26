@@ -2,10 +2,9 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.typesafe.config.{ ConfigValueFactory, ConfigFactory }
+import com.typesafe.config.{ ConfigFactory, ConfigValueFactory }
 import service.Service
 import utils._
-
 
 object NLPServer extends App with Service {
 
@@ -32,8 +31,8 @@ object NLPServer extends App with Service {
 }
 
 /**
- * Server configuration
- */
+  * Server configuration
+  */
 object ServerConfig {
 
   val defaultConfig = ConfigFactory.load()
@@ -41,12 +40,9 @@ object ServerConfig {
   val host = "host"
   val defaultPort = defaultConfig.getString("akka.http.server.port")
   val defaultHostName = defaultConfig.getString("akka.http.server.host")
-  val defaults = Map(
-    port -> defaultPort,
-    host -> defaultHostName)
+  val defaults = Map(port -> defaultPort, host -> defaultHostName)
 
   def initializeResources(): Unit = {
     val _ = processors.ProcessorsBridge.defaultProc.annotate("blah")
   }
 }
-

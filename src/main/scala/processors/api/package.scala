@@ -3,7 +3,6 @@ package processors
 import org.json4s.JsonDSL._
 import org.json4s.{ DefaultFormats, JValue }
 
-
 package object api {
 
   implicit val formats = DefaultFormats

@@ -8,13 +8,13 @@ import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
-import processors.{ ConverterUtils, ProcessorsBridge, api }
+import processors.{ api, ConverterUtils, ProcessorsBridge }
 import org.clulab.processors
 
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport
 import org.json4s._
 import org.json4s.JsonDSL._
-import org.json4s.{ DefaultFormats, JValue, JNothing, jackson }
+import org.json4s.{ jackson, DefaultFormats, JNothing, JValue }
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContextExecutor
@@ -249,4 +249,3 @@ trait Service extends Json4sSupport {
     }
   }
 }
-

@@ -1,7 +1,6 @@
 import com.typesafe.scalalogging.LazyLogging
 import org.clulab.processors
 
-
 package object processors extends LazyLogging {
 
   def displaySentence(sentence: processors.Sentence): Unit = {

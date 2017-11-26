@@ -12,7 +12,6 @@ import org.json4s.JsonAST.JValue
 
 import scala.util.{ Failure, Success, Try }
 
-
 object ProcessorsBridge {
 
   // initialize a processor
@@ -73,8 +72,7 @@ object ProcessorsBridge {
   def getMentionsAsJSON(doc: Document, rules: String): JValue = {
     Try(getMentions(doc, rules)) match {
       case Success(mentions) => ConverterUtils.toJSON(mentions)
-      case Failure(error) => ConverterUtils.toJSON(error)
+      case Failure(error)    => ConverterUtils.toJSON(error)
     }
   }
 }
-

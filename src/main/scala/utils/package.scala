@@ -2,12 +2,12 @@ import scala.annotation.tailrec
 import scala.language.implicitConversions
 import scala.util.matching.Regex
 
-
 package object utils {
 
   implicit def toRichRegex(regex: Regex): RichRegex = RichRegex(regex.toString)
 
   def projectVersion: String = processors.api.BuildInfo.version
+
   def commit: String = {
     val c = processors.api.BuildInfo.gitHeadCommit
     val state = if (processors.api.BuildInfo.gitUncommittedChanges) "-DIRTY" else ""

@@ -11,7 +11,6 @@ import org.json4s.JsonDSL._
 import scala.io.Source
 import utils._
 
-
 object ConverterUtils extends LazyLogging {
 
   // For validating URLs to rule files
@@ -38,4 +37,3 @@ object ConverterUtils extends LazyLogging {
 
   def toJSON(error: Throwable): JValue = "error" -> error.getMessage
 }
-
