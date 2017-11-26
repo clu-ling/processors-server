@@ -7,7 +7,9 @@ lazy val commonScalacOptions = Seq(
   "-Ywarn-dead-code",
   // "-Ywarn-value-discard",
   "-Ywarn-unused",
+  // format: off
   "-encoding", "utf8"
+  // format: on
 )
 
 lazy val commonSettings = Seq(
@@ -66,7 +68,9 @@ lazy val assemblySettings = Seq(
   mainClass in assembly := Some("NLPServer"),
   assemblyExcludedJars in assembly := {
     val cp = (fullClasspath in assembly).value
-    cp filter { x => x.data.getName.matches("sbt.*") || x.data.getName.matches(".*macros.*") }
+    cp filter { x =>
+      x.data.getName.matches("sbt.*") || x.data.getName.matches(".*macros.*")
+    }
   },
   assemblyMergeStrategy in assembly := {
     //case c if c.endsWith("net.sf.ehcache.EhcacheInit") => MergeStrategy.first
@@ -81,7 +85,12 @@ lazy val assemblySettings = Seq(
 lazy val buildInfoSettings = Seq(
   buildInfoPackage := "processors.api",
   buildInfoKeys := Seq[BuildInfoKey](
-    name, version, scalaVersion, sbtVersion, libraryDependencies, scalacOptions,
+    name,
+    version,
+    scalaVersion,
+    sbtVersion,
+    libraryDependencies,
+    scalacOptions,
     "gitCurrentBranch" -> { git.gitCurrentBranch.value },
     "gitHeadCommit" -> { git.gitHeadCommit.value.getOrElse("") },
     "gitHeadCommitDate" -> { git.gitHeadCommitDate.value.getOrElse("") },
@@ -91,19 +100,45 @@ lazy val buildInfoSettings = Seq(
   buildInfoOptions += BuildInfoOption.ToJson
 )
 
+// check style per scalastyle-config.xml
+lazy val scalaStyleSettings = Seq(
+  scalastyleFailOnError := true,
+  scalastyleFailOnWarning := false
+)
+
+// format code per .scalfmt.conf
+lazy val scalaFormattingSettings = Seq(
+  scalafmtShowDiff in (ThisBuild, scalafmt) := true,
+  // run BEFORE compile, etc.
+  scalafmtOnCompile in ThisBuild := true,
+  scalafmtTestOnCompile in ThisBuild := true
+)
+
+lazy val testScalastyle = taskKey[Unit]("run scalastyle for tests")
+testScalastyle := scalastyle.in(Test).toTask("").value
+
+lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
+compileScalastyle := scalastyle.in(Compile).toTask("").value
+
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(GitVersioning)
   .enablePlugins(sbtdocker.DockerPlugin)
   .enablePlugins(Npm)
+  .enablePlugins(PreprocessPlugin)
+  .enablePlugins(ScalastylePlugin)
   .settings(buildInfoSettings)
   .settings(npmSettings)
   .settings(commonSettings)
   .settings(dockerSettings)
   .settings(assemblySettings)
+  .settings(scalaStyleSettings)
+  .settings(scalaFormattingSettings)
   .settings(
     name := "processors-server",
-    aggregate in test := false
+    aggregate in test := false,
+    (compile in Compile) := ((compile in Compile) dependsOn compileScalastyle).value,
+    (test in Test) := ((test in Test) dependsOn testScalastyle).value
   )
 
 //logLevel := Level.Info
@@ -117,32 +152,32 @@ libraryDependencies ++= {
   val procV = "6.1.4"
 
   Seq(
-    "com.typesafe"                        %  "config"                                % "1.3.0",
-    "org.json4s"                         %%  "json4s-core"                           % json4sV,
-    "org.json4s"                         %%  "json4s-jackson"                        % json4sV,
-    "de.heikoseeberger"                  %%  "akka-http-json4s"                      % "1.17.0",
+    "com.typesafe"      % "config"            % "1.3.0",
+    "org.json4s"        %% "json4s-core"      % json4sV,
+    "org.json4s"        %% "json4s-jackson"   % json4sV,
+    "de.heikoseeberger" %% "akka-http-json4s" % "1.17.0",
     // AKKA
-    "com.typesafe.akka"                  %%  "akka-actor"                            % akkaV,
-    "com.typesafe.akka"                  %%  "akka-stream"                           % akkaV,
-    "com.typesafe.akka"                  %%  "akka-slf4j"                            % akkaV,
+    "com.typesafe.akka" %% "akka-actor"  % akkaV,
+    "com.typesafe.akka" %% "akka-stream" % akkaV,
+    "com.typesafe.akka" %% "akka-slf4j"  % akkaV,
     // akka-http
-    "com.typesafe.akka"                  %%  "akka-http-core"                        % akkaHTTPV,
-    "com.typesafe.akka"                  %%  "akka-http"                             % akkaHTTPV,
-    "com.typesafe.akka"                  %%  "akka-http-testkit"                     % akkaHTTPV,
-    "com.typesafe.akka"                  %%  "akka-http-xml"                         % akkaHTTPV,
+    "com.typesafe.akka" %% "akka-http-core"    % akkaHTTPV,
+    "com.typesafe.akka" %% "akka-http"         % akkaHTTPV,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaHTTPV,
+    "com.typesafe.akka" %% "akka-http-xml"     % akkaHTTPV,
     // processors
-    "org.clulab"                         %% "processors-main"                        % procV,
-    "org.clulab"                         %% "processors-corenlp"                     % procV,
-    "org.clulab"                         %% "processors-odin"                        % procV,
-    "org.clulab"                         %% "processors-modelsmain"                  % procV,
-    "org.clulab"                         %% "processors-modelscorenlp"               % procV,
+    "org.clulab" %% "processors-main"          % procV,
+    "org.clulab" %% "processors-corenlp"       % procV,
+    "org.clulab" %% "processors-odin"          % procV,
+    "org.clulab" %% "processors-modelsmain"    % procV,
+    "org.clulab" %% "processors-modelscorenlp" % procV,
     // testing
-    "org.specs2"                         %%  "specs2-core"                           % "2.3.11" % "test",
-    "com.typesafe.akka"                  %%  "akka-testkit"                          % akkaV    % "test",
+    "org.specs2"        %% "specs2-core"  % "2.3.11" % "test",
+    "com.typesafe.akka" %% "akka-testkit" % akkaV    % "test",
     // logging
-    "ch.qos.logback"                      %  "logback-classic"                       % "1.1.7",
-    "com.typesafe.scala-logging"         %%  "scala-logging"                         % "3.4.0",
+    "ch.qos.logback"             % "logback-classic" % "1.1.7",
+    "com.typesafe.scala-logging" %% "scala-logging"  % "3.4.0",
     // testing
-    "org.scalatest"                      %% "scalatest"                              % "2.2.6" % Test
+    "org.scalatest" %% "scalatest" % "2.2.6" % Test
   )
 }
