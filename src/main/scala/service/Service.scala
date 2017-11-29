@@ -235,6 +235,48 @@ trait Service extends Json4sSupport {
                   complete(json)
               }
             } ~
+            path("api" / "openie" / "entities" / "extract") {
+              entity(as[JValue]) {
+                // case s: JValue if s \ "words" != JNothing =>
+                //   val sentence = ConverterUtils.toProcessorsSentence(s)
+                //   logger.info(s"Openie Entity Extractor")
+                //   val mentions = ProcessorsBridge.extractEntities(sentence)
+                //   complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(document)
+                  complete(mentions)
+              }
+            } ~
+            path("api" / "openie" / "entities" / "base_extract") {
+              entity(as[JValue]) {
+                // case s: JValue if s \ "words" != JNothing =>
+                //   val sentence = ConverterUtils.toProcessorsSentence(s)
+                //   logger.info(s"Openie Entity Extractor")
+                //   val mentions = ProcessorsBridge.extractEntities(sentence)
+                //   complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractBaseEntities(document)
+                  complete(mentions)
+              }
+            } ~
+            path("api" / "openie" / "entities" / "extract_filter") {
+              entity(as[JValue]) {
+                // case s: JValue if s \ "words" != JNothing =>
+                //   val sentence = ConverterUtils.toProcessorsSentence(s)
+                //   logger.info(s"Openie Entity Extractor")
+                //   val mentions = ProcessorsBridge.extractEntities(sentence)
+                //   complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractAndFilterEntities(document)
+                  complete(mentions)
+              }
+            } ~
             // shuts down the server
             path("shutdown") {
               complete {

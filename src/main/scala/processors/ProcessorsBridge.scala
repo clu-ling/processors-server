@@ -9,6 +9,7 @@ import org.clulab.processors.clu.CluProcessor
 import org.clulab.processors.fastnlp.FastNLPProcessor
 import org.clulab.processors.shallownlp.ShallowNLPProcessor
 import org.json4s.JsonAST.JValue
+import org.clulab.openie.entities.RuleBasedEntityFinder
 
 import scala.util.{ Failure, Success, Try }
 
@@ -19,6 +20,7 @@ object ProcessorsBridge {
   lazy val fastnlp = new FastNLPProcessor(withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
   lazy val bionlp = new BioNLPProcessor(withChunks = false, withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
   lazy val clu = new CluProcessor()
+  lazy val ef = RuleBasedEntityFinder(maxHops = 3)
 
   // fastnlp has an NER component plugged in
   val defaultProc = fastnlp
@@ -74,5 +76,23 @@ object ProcessorsBridge {
       case Success(mentions) => ConverterUtils.toJSON(mentions)
       case Failure(error)    => ConverterUtils.toJSON(error)
     }
+  }
+
+  // openie entity finder extract and filter
+  def extractAndFilterEntities(doc: Document): JValue = {
+    val mentions = ef.extractAndFilter(doc)
+    ConverterUtils.toJSON(mentions)
+  }
+
+  // openie entity finder base
+  def extractBaseEntities(doc: Document): JValue = {
+    val mentions = ef.extractBaseEntities(doc)
+    ConverterUtils.toJSON(mentions)
+  }
+
+  // openie entity finder
+  def extractEntities(doc: Document): JValue = {
+    val mentions = ef.extract(doc)
+    ConverterUtils.toJSON(mentions)
   }
 }
