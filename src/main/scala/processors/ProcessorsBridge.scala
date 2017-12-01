@@ -83,16 +83,28 @@ object ProcessorsBridge {
     val mentions = ef.extractAndFilter(doc)
     ConverterUtils.toJSON(mentions)
   }
+  def extractAndFilterEntities(sentence: Sentence): JValue = {
+    val doc = Document(Array(sentence))
+    extractAndFilterEntities(doc)
+  }
 
   // openie entity finder base
   def extractBaseEntities(doc: Document): JValue = {
     val mentions = ef.extractBaseEntities(doc)
     ConverterUtils.toJSON(mentions)
   }
+  def extractBaseEntities(sentence: Sentence): JValue = {
+    val doc = Document(Array(sentence))
+    extractBaseEntities(doc)
+  }
 
   // openie entity finder
   def extractEntities(doc: Document): JValue = {
     val mentions = ef.extract(doc)
     ConverterUtils.toJSON(mentions)
+  }
+  def extractEntities(sentence: Sentence): JValue = {
+    val doc = Document(Array(sentence))
+    extractEntities(doc)
   }
 }

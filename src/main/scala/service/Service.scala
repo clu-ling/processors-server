@@ -237,10 +237,10 @@ trait Service extends Json4sSupport {
             } ~
             path("api" / "openie" / "entities" / "extract") {
               entity(as[JValue]) {
-                // case s: JValue if s \ "words" != JNothing =>
-                //   val sentence = ConverterUtils.toProcessorsSentence(s)
-                //   logger.info(s"Openie Entity Extractor")
-                //   val mentions = ProcessorsBridge.extractEntities(sentence)
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
                 //   complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)
@@ -249,13 +249,13 @@ trait Service extends Json4sSupport {
                   complete(mentions)
               }
             } ~
-            path("api" / "openie" / "entities" / "base_extract") {
+            path("api" / "openie" / "entities" / "base-extract") {
               entity(as[JValue]) {
-                // case s: JValue if s \ "words" != JNothing =>
-                //   val sentence = ConverterUtils.toProcessorsSentence(s)
-                //   logger.info(s"Openie Entity Extractor")
-                //   val mentions = ProcessorsBridge.extractEntities(sentence)
-                //   complete(mentions)
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)
                   logger.info(s"Openie Entity Extractor")
@@ -263,13 +263,13 @@ trait Service extends Json4sSupport {
                   complete(mentions)
               }
             } ~
-            path("api" / "openie" / "entities" / "extract_filter") {
+            path("api" / "openie" / "entities" / "extract-filter") {
               entity(as[JValue]) {
-                // case s: JValue if s \ "words" != JNothing =>
-                //   val sentence = ConverterUtils.toProcessorsSentence(s)
-                //   logger.info(s"Openie Entity Extractor")
-                //   val mentions = ProcessorsBridge.extractEntities(sentence)
-                //   complete(mentions)
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)
                   logger.info(s"Openie Entity Extractor")
