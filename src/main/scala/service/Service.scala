@@ -241,7 +241,7 @@ trait Service extends Json4sSupport {
                   val sentence = ConverterUtils.toProcessorsSentence(s)
                   logger.info(s"Openie Entity Extractor")
                   val mentions = ProcessorsBridge.extractEntities(sentence)
-                //   complete(mentions)
+                  complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)
                   logger.info(s"Openie Entity Extractor")
