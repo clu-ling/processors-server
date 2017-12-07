@@ -148,7 +148,7 @@ libraryDependencies ++= {
   val akkaV = "2.5.4"
   val akkaHTTPV = "10.0.10"
   val json4sV = "3.5.3"
-  val procV = "6.1.4"
+  val procV = "6.2.0"
 
   Seq(
     "com.typesafe"      % "config"            % "1.3.0",
@@ -168,6 +168,7 @@ libraryDependencies ++= {
     "org.clulab" %% "processors-main"          % procV,
     "org.clulab" %% "processors-corenlp"       % procV,
     "org.clulab" %% "processors-odin"          % procV,
+    "org.clulab" %% "processors-openie"          % procV,
     "org.clulab" %% "processors-modelsmain"    % procV,
     "org.clulab" %% "processors-modelscorenlp" % procV,
     // testing
