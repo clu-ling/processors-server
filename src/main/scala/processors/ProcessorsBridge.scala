@@ -23,7 +23,7 @@ object ProcessorsBridge {
   lazy val ef = RuleBasedEntityFinder(maxHops = 3)
 
   // fastnlp has an NER component plugged in
-  val defaultProc = fastnlp
+  val defaultProc: Processor = fastnlp
 
   /** annotate text */
   def annotate(text: String): Document = toAnnotatedDocument(text, defaultProc)
@@ -40,36 +40,43 @@ object ProcessorsBridge {
 
   /** Generate chunk labels */
   def chunkWithFastNLP(sentence: Sentence): Sentence = {
-    val doc = Document(sentences = Array(sentence))
-    val chunkedDoc = chunkWithFastNLP(doc)
-    chunkedDoc.sentences.head
+    val words = sentence.words
+    val tags = sentence.tags.get
+    val chunks = fastnlp.chunker.classify(words, tags)
+    sentence.chunks = Some(chunks)
+    sentence
   }
+
   def chunkWithFastNLP(doc: Document): Document = {
-    fastnlp.chunking(doc)
-    doc
+    val chunkedSentences = doc.sentences.map(chunkWithFastNLP)
+    Document(sentences = chunkedSentences)
   }
 
-  /** Generate lemma labels */
-  def lemmatizeWithFastNLP(sentence: Sentence): Sentence = {
-    val doc = Document(sentences = Array(sentence))
-    val lemmatizedDoc = lemmatizeWithFastNLP(doc)
-    lemmatizedDoc.sentences.head
-  }
-  def lemmatizeWithFastNLP(doc: Document): Document = {
-    fastnlp.lemmatize(doc)
-    doc
-  }
-
-  /** Generate PoS labels */
-  def tagPartsOfSpeechWithFastNLP(sentence: Sentence): Sentence = {
-    val doc = Document(sentences = Array(sentence))
-    val taggedDoc = tagPartsOfSpeechWithFastNLP(doc)
-    taggedDoc.sentences.head
-  }
-  def tagPartsOfSpeechWithFastNLP(doc: Document): Document = {
-    fastnlp.tagPartsOfSpeech(doc)
-    doc
-  }
+//  /** Generate lemma labels */
+//  def lemmatizeWithFastNLP(sentence: Sentence): Sentence = {
+//    val doc = Document(sentences = Array(sentence))
+//    val lemmatizedDoc = lemmatizeWithFastNLP(doc)
+//    lemmatizedDoc.sentences.head
+//  }
+//
+//  def lemmatizeWithFastNLP(doc: Document): Document = {
+//    val coreDoc = CoreNLPUtils.mkCoreDocument(doc)
+//    fastnlp.lemmatize(coreDoc)
+//    coreDoc
+//  }
+//
+//  /** Generate PoS labels */
+//  def tagPartsOfSpeechWithFastNLP(sentence: Sentence): Sentence = {
+//    val doc = Document(sentences = Array(sentence))
+//    val taggedDoc = tagPartsOfSpeechWithFastNLP(doc)
+//    taggedDoc.sentences.head
+//  }
+//
+//  def tagPartsOfSpeechWithFastNLP(doc: Document): Document = {
+//    val coreDoc = CoreNLPUtils.mkCoreDocument(doc)
+//    fastnlp.tagPartsOfSpeech(coreDoc)
+//    coreDoc
+//  }
 
   // convert processors document to a json-serializable format
   def toAnnotatedDocument(text: String, proc: Processor): Document = {
@@ -116,6 +123,7 @@ object ProcessorsBridge {
     val mentions = ef.extractAndFilter(doc)
     ConverterUtils.toJSON(mentions)
   }
+
   def extractAndFilterEntities(sentence: Sentence): JValue = {
     val doc = Document(Array(sentence))
     extractAndFilterEntities(doc)
@@ -126,6 +134,7 @@ object ProcessorsBridge {
     val mentions = ef.extractBaseEntities(doc)
     ConverterUtils.toJSON(mentions)
   }
+
   def extractBaseEntities(sentence: Sentence): JValue = {
     val doc = Document(Array(sentence))
     extractBaseEntities(doc)
@@ -136,6 +145,7 @@ object ProcessorsBridge {
     val mentions = ef.extract(doc)
     ConverterUtils.toJSON(mentions)
   }
+
   def extractEntities(sentence: Sentence): JValue = {
     val doc = Document(Array(sentence))
     extractEntities(doc)

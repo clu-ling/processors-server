@@ -33,6 +33,8 @@ object ConverterUtils extends LazyLogging {
 
   def toJSON(document: Document): JValue = document.jsonAST
 
+  def toJSON(sentence: Sentence): JValue = sentence.jsonAST
+
   def toJSON(mentions: Seq[Mention]): JValue = mentions.jsonAST
 
   def toJSON(error: Throwable): JValue = "error" -> error.getMessage
