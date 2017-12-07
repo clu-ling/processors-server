@@ -38,6 +38,39 @@ object ProcessorsBridge {
   def annotateWithClu(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, clu)
   def toAnnotatedDocument(sentences: Seq[String], proc: Processor): Document = proc.annotateFromSentences(sentences, keepText = true)
 
+  /** Generate chunk labels */
+  def chunkWithFastNLP(sentence: Sentence): Sentence = {
+    val doc = Document(sentences = Array(sentence))
+    val chunkedDoc = chunkWithFastNLP(doc)
+    chunkedDoc.sentences.head
+  }
+  def chunkWithFastNLP(doc: Document): Document = {
+    fastnlp.chunking(doc)
+    doc
+  }
+
+  /** Generate lemma labels */
+  def lemmatizeWithFastNLP(sentence: Sentence): Sentence = {
+    val doc = Document(sentences = Array(sentence))
+    val lemmatizedDoc = lemmatizeWithFastNLP(doc)
+    lemmatizedDoc.sentences.head
+  }
+  def lemmatizeWithFastNLP(doc: Document): Document = {
+    fastnlp.lemmatize(doc)
+    doc
+  }
+
+  /** Generate PoS labels */
+  def tagPartsOfSpeechWithFastNLP(sentence: Sentence): Sentence = {
+    val doc = Document(sentences = Array(sentence))
+    val taggedDoc = tagPartsOfSpeechWithFastNLP(doc)
+    taggedDoc.sentences.head
+  }
+  def tagPartsOfSpeechWithFastNLP(doc: Document): Document = {
+    fastnlp.tagPartsOfSpeech(doc)
+    doc
+  }
+
   // convert processors document to a json-serializable format
   def toAnnotatedDocument(text: String, proc: Processor): Document = {
     proc.annotate(text, keepText = true)

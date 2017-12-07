@@ -160,6 +160,51 @@ trait Service extends Json4sSupport {
                 complete(json)
               }
             } ~
+            // chunk
+            path("api" / "fastnlp" / "chunk") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"FastNLP chunker")
+                  val chunkedSentence = ProcessorsBridge.chunkWithFastNLP(sentence)
+                  complete(chunkedSentence)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"FastNLP chunker")
+                  val chunkedDoc = ProcessorsBridge.chunkWithFastNLP(document)
+                  complete(chunkedDoc)
+              }
+            } ~
+            // lemmatize
+            path("api" / "fastnlp" / "lemmatize") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"FastNLP lemmatizer")
+                  val lemmatizedSentence = ProcessorsBridge.lemmatizeWithFastNLP(sentence)
+                  complete(lemmatizedSentence)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"FastNLP lemmatizer")
+                  val lemmatizedDoc = ProcessorsBridge.lemmatizeWithFastNLP(document)
+                  complete(lemmatizedDoc)
+              }
+            } ~
+            // PoS tag
+            path("api" / "fastnlp" / "tag-parts-of-speech") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"FastNLP PoS tagger")
+                  val taggedSentence = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(sentence)
+                  complete(taggedSentence)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"FastNLP PoS tagger")
+                  val taggedDoc = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(document)
+                  complete(taggedDoc)
+              }
+            } ~
             // Handle sentiment analysis of text
             path("api" / "sentiment" / "corenlp" / "score") {
               entity(as[JValue]) {
