@@ -50,3 +50,9 @@ sudo npm install npm -g
 ```
 sudo chown -R mcapizzi processors-server
 ```
+
+## adding `.sbtopts`
+```
+-J-Xms4G
+-J-Xmx6G
+```
