@@ -56,3 +56,12 @@ sudo chown -R mcapizzi processors-server
 -J-Xms4G
 -J-Xmx6G
 ```
+
+# Running on server
+
+```
+sbt
+run-main NLPServer --host 0.0.0.0
+```
+
+Then from local machine, use this `API` address: `http://[server_ip]:8888/api/annotate`
