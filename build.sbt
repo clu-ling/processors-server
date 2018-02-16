@@ -1,3 +1,4 @@
+
 lazy val commonScalacOptions = Seq(
   "-feature",
   "-unchecked",
@@ -58,21 +59,7 @@ lazy val dockerSettings = Seq(
 
 lazy val assemblySettings = Seq(
   assemblyJarName := { s"processors-server.jar" },
-  mainClass in assembly := Some("NLPServer"),
-  assemblyExcludedJars in assembly := {
-    val cp = (fullClasspath in assembly).value
-    cp filter { x =>
-      x.data.getName.matches("sbt.*") || x.data.getName.matches(".*macros.*")
-    }
-  },
-  assemblyMergeStrategy in assembly := {
-    //case c if c.endsWith("net.sf.ehcache.EhcacheInit") => MergeStrategy.first
-    case netty if netty.endsWith("io.netty.versions.properties") => MergeStrategy.first
-    //case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-    case x =>
-      val oldStrategy = (assemblyMergeStrategy in assembly).value
-      oldStrategy(x)
-  }
+  mainClass in assembly := Some("NLPServer")
 )
 
 lazy val buildInfoSettings = Seq(
@@ -136,8 +123,8 @@ lazy val root = (project in file("."))
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= {
-  val akkaV = "2.5.4"
-  val akkaHTTPV = "10.0.10"
+  val akkaV = "2.5.9"
+  val akkaHTTPV = "10.1.0-RC2"
   val json4sV = "3.5.3"
   val procV = "6.1.4"
 
@@ -145,7 +132,7 @@ libraryDependencies ++= {
     "com.typesafe"      % "config"            % "1.3.0",
     "org.json4s"        %% "json4s-core"      % json4sV,
     "org.json4s"        %% "json4s-jackson"   % json4sV,
-    "de.heikoseeberger" %% "akka-http-json4s" % "1.17.0",
+    "de.heikoseeberger" %% "akka-http-json4s" % "1.20.0-RC2",
     // AKKA
     "com.typesafe.akka" %% "akka-actor"  % akkaV,
     "com.typesafe.akka" %% "akka-stream" % akkaV,

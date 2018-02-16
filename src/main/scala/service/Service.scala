@@ -11,7 +11,7 @@ import akka.stream.Materializer
 import processors.{ api, ConverterUtils, ProcessorsBridge }
 import org.clulab.processors
 
-import de.heikoseeberger.akkahttpjson4s.Json4sSupport
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.{ jackson, DefaultFormats, JNothing, JValue }
@@ -20,7 +20,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContextExecutor
 import com.typesafe.config.Config
 
-trait Service extends Json4sSupport {
+trait Service {
 
   implicit val htmlMarshaller = ScalaXmlSupport.nodeSeqMarshaller(MediaTypes.`text/html`)
   implicit val serialization = jackson.Serialization
@@ -41,7 +41,7 @@ trait Service extends Json4sSupport {
 
   //  def apiRequest(request: HttpRequest): Future[HttpResponse] = Source.single(request).via(apiConnectionFlow).runWith(Sink.head)
 
-  val routes = {
+  def route(implicit materializer: Materializer) = {
     // log results
     logRequestResult("processors-server-microservice") {
       // index page
