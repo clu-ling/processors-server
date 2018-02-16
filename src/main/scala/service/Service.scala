@@ -163,6 +163,57 @@ trait Service {
                 complete(json)
               }
             } ~
+            // chunk
+            path("api" / "fastnlp" / "chunk") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"FastNLP chunker")
+                  val chunkedSentence = ProcessorsBridge.chunkWithFastNLP(sentence)
+                  val json = ConverterUtils.toJSON(chunkedSentence)
+                  complete(json)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"FastNLP chunker")
+                  val chunkedDoc = ProcessorsBridge.chunkWithFastNLP(document)
+                  val json = ConverterUtils.toJSON(chunkedDoc)
+                  complete(json)
+              }
+            } ~
+//            // lemmatize
+//            path("api" / "fastnlp" / "lemmatize") {
+//              entity(as[JValue]) {
+//                case s: JValue if s \ "words" != JNothing =>
+//                  val sentence = ConverterUtils.toProcessorsSentence(s)
+//                  logger.info(s"FastNLP lemmatizer")
+//                  val lemmatizedSentence = ProcessorsBridge.lemmatizeWithFastNLP(sentence)
+//                  val json = ConverterUtils.toJSON(lemmatizedSentence)
+//                  complete(json)
+//                case d: JValue if d \ "sentences" != JNothing =>
+//                  val document = ConverterUtils.toProcessorsDocument(d)
+//                  logger.info(s"FastNLP lemmatizer")
+//                  val lemmatizedDoc = ProcessorsBridge.lemmatizeWithFastNLP(document)
+//                  val json = ConverterUtils.toJSON(lemmatizedDoc)
+//                  complete(json)
+//              }
+//            } ~
+//            // PoS tag
+//            path("api" / "fastnlp" / "tag-parts-of-speech") {
+//              entity(as[JValue]) {
+//                case s: JValue if s \ "words" != JNothing =>
+//                  val sentence = ConverterUtils.toProcessorsSentence(s)
+//                  logger.info(s"FastNLP PoS tagger")
+//                  val taggedSentence = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(sentence)
+//                  val json = ConverterUtils.toJSON(taggedSentence)
+//                  complete(json)
+//                case d: JValue if d \ "sentences" != JNothing =>
+//                  val document = ConverterUtils.toProcessorsDocument(d)
+//                  logger.info(s"FastNLP PoS tagger")
+//                  val taggedDoc = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(document)
+//                  val json = ConverterUtils.toJSON(taggedDoc)
+//                  complete(json)
+//              }
+//            } ~
             // Handle sentiment analysis of text
             path("api" / "sentiment" / "corenlp" / "score") {
               entity(as[JValue]) {
@@ -236,6 +287,48 @@ trait Service {
                   val document = ProcessorsBridge.annotateWithFastNLP(text)
                   val json = ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
                   complete(json)
+              }
+            } ~
+            path("api" / "openie" / "entities" / "extract") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(document)
+                  complete(mentions)
+              }
+            } ~
+            path("api" / "openie" / "entities" / "base-extract") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractBaseEntities(document)
+                  complete(mentions)
+              }
+            } ~
+            path("api" / "openie" / "entities" / "extract-filter") {
+              entity(as[JValue]) {
+                case s: JValue if s \ "words" != JNothing =>
+                  val sentence = ConverterUtils.toProcessorsSentence(s)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  complete(mentions)
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val document = ConverterUtils.toProcessorsDocument(d)
+                  logger.info(s"Openie Entity Extractor")
+                  val mentions = ProcessorsBridge.extractAndFilterEntities(document)
+                  complete(mentions)
               }
             } ~
             // shuts down the server
