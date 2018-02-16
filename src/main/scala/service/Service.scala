@@ -66,7 +66,10 @@ trait Service extends Json4sSupport {
             complete(api.jsonBuildInfo)
           }
         } ~
-        // Demo
+        // Demos
+        path("nlp" / "demo") {
+          getFromResource("static/annotation-demo.html")
+        } ~
         path("odin" / "demo") {
           getFromResource("static/odin.html")
         } ~
