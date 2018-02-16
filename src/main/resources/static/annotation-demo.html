@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="Gus Hahn-Powell"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>NLP Demo</title>
+    <link rel="stylesheet" href="/css/vendor.min.css">
+    <link rel="stylesheet" href="/css/app.min.css">
+</head>
+<body>
+  <h1>Annotating text</h1>
+  <div class="container-fluid">
+    <form data-toggle="validator" role="form" class="col-xs-6" id="anno-demo">
+      <div class="form-group">
+        <label for="text" class="control-label">Text</label>
+        <textarea class="form-control" rows="8" id="text" placeholder="Your text here" required>My name is Inigo Montoya.</textarea>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+  <!-- results here -->
+  <div id="results" class="container-fluid col-xs-6">
+    Results
+    <textarea class="form-control" rows="8" id="doc-json" placeholder="No results" readonly>
+    </textarea>
+  </div>
+  <!-- modal to display while loading -->
+  <div class="modal fade" id="processing-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">
+    <div class="modal-dialog modal-m">
+      <div class="modal-content">
+        <div class="modal-header"><h3 style="margin:0;">Annotating text...</h3></div>
+          <div class="modal-body">
+            <div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/bundle.min.js"></script>
+  <script type='text/javascript'>
+    $('document').ready(function () {
+      $('#anno-demo').on('submit', function (e) {
+          if (e.isDefaultPrevented()) {
+              alert('form is not valid');
+          } else {
+              e.preventDefault();
+              sendAJAXrequest();
+         }
+      });
+
+      function openModal() {
+        console.log("Displaying modal...");
+        $("#processing-modal").modal('show');
+      }
+
+      function closeModal() {
+        console.log("Closing modal...");
+        $("#processing-modal").modal('hide');
+      }
+
+      function sendAJAXrequest() {
+        openModal();
+        var address = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+        console.log(address);
+        xhr = new XMLHttpRequest();
+        var url = address + "/api/annotate";
+        console.log(url);
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var json = JSON.parse(xhr.responseText);
+            $('#doc-json').val(JSON.stringify(json, null, 2));
+            closeModal();
+          }
+        }
+        // build request from the two textareas
+        var data = JSON.stringify({"text":$('#text').val()});
+        console.log("data " + data);
+        xhr.send(data);
+      }
+    });
+  </script>
+</body>
+</html>

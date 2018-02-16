@@ -1,8 +1,7 @@
 package processors.api
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{ FlatSpec, Matchers }
 import processors.ProcessorsBridge
-
 
 class TestProcessorsBridge extends FlatSpec with Matchers {
 
@@ -13,7 +12,8 @@ class TestProcessorsBridge extends FlatSpec with Matchers {
     doc.sentences.size == preSplitText.length should be(true)
   }
 
-  val textForSentimentAnalysis = "If you want to make an apple pie from scratch, you must first create the universe. It is far better to grasp the universe as it really is than to persist in delusion, however satisfying and reassuring."
+  val textForSentimentAnalysis =
+    "If you want to make an apple pie from scratch, you must first create the universe. It is far better to grasp the universe as it really is than to persist in delusion, however satisfying and reassuring."
 
   "ProcessorsBridge.toSentimentScores" should "produce scores from text (one score for each sentence)" in {
     val ss = ProcessorsBridge.toSentimentScores(textForSentimentAnalysis)

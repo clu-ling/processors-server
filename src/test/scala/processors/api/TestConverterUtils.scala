@@ -1,9 +1,8 @@
 package processors.api
 
-import org.scalatest.{Matchers, FlatSpec}
-import processors.{ConverterUtils, ProcessorsBridge}
+import org.scalatest.{ FlatSpec, Matchers }
+import processors.{ ConverterUtils, ProcessorsBridge }
 import processors.api
-
 
 class TestConverterUtils extends FlatSpec with Matchers {
 
@@ -28,7 +27,8 @@ class TestConverterUtils extends FlatSpec with Matchers {
   "ConverterUtils.urlToRules" should "retrieve Odin rules from a url pointing to a yaml file" in {
     val text = "Homer Simpson is a named entity."
     val procDoc = ProcessorsBridge.annotateWithFastNLP(text)
-    val url = "https://raw.githubusercontent.com/clulab/reach/c33eb9f4f772ff246c4883b7c3230d9154305402/src/main/resources/org/clulab/demo/open/grammars/rules.yml"
+    val url =
+      "https://raw.githubusercontent.com/clulab/reach/c33eb9f4f772ff246c4883b7c3230d9154305402/src/main/resources/org/clulab/demo/open/grammars/rules.yml"
     val rules = ConverterUtils.urlToRules(url)
     rules.nonEmpty should be(true)
     val mentions = ProcessorsBridge.getMentions(procDoc, rules)
@@ -37,6 +37,6 @@ class TestConverterUtils extends FlatSpec with Matchers {
 
   it should "fail on urls not ending in .yaml or .yml" in {
     val badURL = "https://www.societyofwafflecartographers.com"
-    a [api.BadURLException] should be thrownBy ConverterUtils.urlToRules(badURL)
+    a[api.BadURLException] should be thrownBy ConverterUtils.urlToRules(badURL)
   }
 }

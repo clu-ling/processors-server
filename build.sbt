@@ -26,13 +26,6 @@ lazy val commonSettings = Seq(
   excludeDependencies += "commons-logging" % "commons-logging"
 )
 
-lazy val npmSettings = Seq(
-  npmWorkingDir := "ui",
-  npmCompileCommands := "run all",
-  npmTestCommands := "test",
-  npmCleanCommands := "run clean"
-)
-
 lazy val dockerSettings = Seq(
   dockerfile in docker := {
     val targetDir = "/app"
@@ -124,10 +117,8 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(GitVersioning)
   .enablePlugins(sbtdocker.DockerPlugin)
-  .enablePlugins(Npm)
   .enablePlugins(ScalastylePlugin)
   .settings(buildInfoSettings)
-  .settings(npmSettings)
   .settings(commonSettings)
   .settings(dockerSettings)
   .settings(assemblySettings)
@@ -179,4 +170,21 @@ libraryDependencies ++= {
     // testing
     "org.scalatest" %% "scalatest" % "2.2.6" % Test
   )
+}
+
+addCommandAlias("dockerize", ";clean;compile;test;buildFrontend;docker")
+addCommandAlias("jarify", ";clean;compile;test;buildFrontend;assembly")
+
+lazy val buildFrontend = taskKey[Unit]("Execute frontend scripts")
+buildFrontend := {
+  val s: TaskStreams = streams.value
+  val shell: Seq[String] = Seq("bash", "-c")
+  val npmInstall: Seq[String] = shell :+ "(cd ui && npm install --no-optional)" // avoid contextify error
+  val npmTasks: Seq[String] = shell :+   "(cd ui && npm run all)"
+  s.log.info("building frontend...")
+  if((npmInstall #&& npmTasks !) == 0) {
+    s.log.success("frontend build successful!")
+  } else {
+    throw new IllegalStateException("frontend build failed!")
+  }
 }
