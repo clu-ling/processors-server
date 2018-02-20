@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
 
-Current version: 3.1.0
+Current version: 3.2.0
 
 # processors-server
 
