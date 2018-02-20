@@ -1,3 +1,4 @@
+
 lazy val commonScalacOptions = Seq(
   "-feature",
   "-unchecked",
@@ -24,13 +25,6 @@ lazy val commonSettings = Seq(
   // show test duration
   testOptions in Test += Tests.Argument("-oD"),
   excludeDependencies += "commons-logging" % "commons-logging"
-)
-
-lazy val npmSettings = Seq(
-  npmWorkingDir := "ui",
-  npmCompileCommands := "run all",
-  npmTestCommands := "test",
-  npmCleanCommands := "run clean"
 )
 
 lazy val dockerSettings = Seq(
@@ -65,21 +59,7 @@ lazy val dockerSettings = Seq(
 
 lazy val assemblySettings = Seq(
   assemblyJarName := { s"processors-server.jar" },
-  mainClass in assembly := Some("NLPServer"),
-  assemblyExcludedJars in assembly := {
-    val cp = (fullClasspath in assembly).value
-    cp filter { x =>
-      x.data.getName.matches("sbt.*") || x.data.getName.matches(".*macros.*")
-    }
-  },
-  assemblyMergeStrategy in assembly := {
-    //case c if c.endsWith("net.sf.ehcache.EhcacheInit") => MergeStrategy.first
-    case netty if netty.endsWith("io.netty.versions.properties") => MergeStrategy.first
-    //case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-    case x =>
-      val oldStrategy = (assemblyMergeStrategy in assembly).value
-      oldStrategy(x)
-  }
+  mainClass in assembly := Some("NLPServer")
 )
 
 lazy val buildInfoSettings = Seq(
@@ -124,10 +104,8 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(GitVersioning)
   .enablePlugins(sbtdocker.DockerPlugin)
-  .enablePlugins(Npm)
   .enablePlugins(ScalastylePlugin)
   .settings(buildInfoSettings)
-  .settings(npmSettings)
   .settings(commonSettings)
   .settings(dockerSettings)
   .settings(assemblySettings)
@@ -145,8 +123,8 @@ lazy val root = (project in file("."))
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= {
-  val akkaV = "2.5.4"
-  val akkaHTTPV = "10.0.10"
+  val akkaV = "2.5.9"
+  val akkaHTTPV = "10.1.0-RC2"
   val json4sV = "3.5.3"
   val procV = "6.2.0"
 
@@ -154,7 +132,7 @@ libraryDependencies ++= {
     "com.typesafe"      % "config"            % "1.3.0",
     "org.json4s"        %% "json4s-core"      % json4sV,
     "org.json4s"        %% "json4s-jackson"   % json4sV,
-    "de.heikoseeberger" %% "akka-http-json4s" % "1.17.0",
+    "de.heikoseeberger" %% "akka-http-json4s" % "1.20.0-RC2",
     // AKKA
     "com.typesafe.akka" %% "akka-actor"  % akkaV,
     "com.typesafe.akka" %% "akka-stream" % akkaV,
@@ -180,4 +158,21 @@ libraryDependencies ++= {
     // testing
     "org.scalatest" %% "scalatest" % "2.2.6" % Test
   )
+}
+
+addCommandAlias("dockerize", ";clean;compile;test;buildFrontend;docker")
+addCommandAlias("jarify", ";clean;compile;test;buildFrontend;assembly")
+
+lazy val buildFrontend = taskKey[Unit]("Execute frontend scripts")
+buildFrontend := {
+  val s: TaskStreams = streams.value
+  val shell: Seq[String] = Seq("bash", "-c")
+  val npmInstall: Seq[String] = shell :+ "(cd ui && npm install --no-optional)" // avoid contextify error
+  val npmTasks: Seq[String] = shell :+   "(cd ui && npm run all)"
+  s.log.info("building frontend...")
+  if((npmInstall #&& npmTasks !) == 0) {
+    s.log.success("frontend build successful!")
+  } else {
+    throw new IllegalStateException("frontend build failed!")
+  }
 }

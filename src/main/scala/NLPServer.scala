@@ -25,7 +25,7 @@ object NLPServer extends App with Service {
   override implicit val materializer = ActorMaterializer()
   override val logger = Logging(system, getClass)
 
-  val bindingFuture = Http().bindAndHandle(handler = routes, interface = h, port = p)
+  val bindingFuture = Http().bindAndHandle(handler = route, interface = h, port = p)
 
   logger.info(s"Server online at http://$h:$p")
 }

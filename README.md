@@ -11,6 +11,7 @@ An `akka-http` server exposing a REST API for text annotation via the [`processo
 ## Requirements
 1. [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 2. [`sbt`](http://www.scala-sbt.org/download.html)
+3. [`npm`](https://docs.npmjs.com/cli/install)
 
 ## How is this useful?
 This might be useful to people wanting to do NLP in a non-`JVM` language without a good existing parser.  Currently there are services for using `processors`' `CluProcessor`, `FastNLPProcessor` (a wrapper for `CoreNLP`) and `BioNLPProcessor`.
@@ -42,7 +43,7 @@ sbt docker
 
 This will create a container named `myedibleenso/processors-server:latest`, which you can run with `docker-compose up` using the included `docker-compose.yml` file.
 
-You can find all of the official containers published on Docker Hub for this project in [this repo](https://hub.docker.com/r/myedibleenso/processors-server/). 
+You can find all of the official containers published on Docker Hub for this project in [this repo](https://hub.docker.com/r/myedibleenso/processors-server/).
 
 ## Logging
 
@@ -116,7 +117,7 @@ A `POST` to an `/api/annotate` endpoint will return a `Document` of the form spe
 
 ### An example using `cURL`
 
-To see it in action, you can try to `POST` `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:   
+To see it in action, you can try to `POST` `json` using `cuRL`.  The text to parse should be given as the value of the `json`'s `text` field:
 ```bash
 curl -H "Content-Type: application/json" -X POST -d '{"text": "My name is Inigo Montoya. You killed my father. Prepare to die."}' http://localhost:8888/api/annotate
 ```
@@ -362,4 +363,4 @@ send a `GET` to `/buildinfo`
 If you're a Python user, you may be interested in using [`py-processors`](https://github.com/myedibleenso/py-processors) in your NLP project.
 
 # Where can I get the latest and greatest fat `jar`?
-Cloning the project and running `sbt assembly` ensures the latest `jar`.  You can download a recent tub-of-`jar` [here](http://www.cs.arizona.edu/~hahnpowell/processors-server/current/processors-server.jar).
+Cloning the project and running `sbt jarify` ensures the latest `jar`.  Published jars are available at this URL:  `http://py-processors.parsertongue.com/v?.?.?/processors-server.jar` (substitute your desired version for `?.?.?`).
