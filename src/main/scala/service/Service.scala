@@ -308,7 +308,7 @@ trait Service {
                 case s: JValue if s \ "words" != JNothing =>
                   val sentence = ConverterUtils.toProcessorsSentence(s)
                   logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  val mentions = ProcessorsBridge.extractBaseEntities(sentence)
                   complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)
@@ -322,7 +322,7 @@ trait Service {
                 case s: JValue if s \ "words" != JNothing =>
                   val sentence = ConverterUtils.toProcessorsSentence(s)
                   logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractEntities(sentence)
+                  val mentions = ProcessorsBridge.extractAndFilterEntities(sentence)
                   complete(mentions)
                 case d: JValue if d \ "sentences" != JNothing =>
                   val document = ConverterUtils.toProcessorsDocument(d)

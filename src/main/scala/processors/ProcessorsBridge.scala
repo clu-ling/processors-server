@@ -8,8 +8,8 @@ import org.clulab.processors.bionlp.BioNLPProcessor
 import org.clulab.processors.clu.CluProcessor
 import org.clulab.processors.fastnlp.FastNLPProcessor
 import org.clulab.processors.shallownlp.ShallowNLPProcessor
-import org.json4s.JsonAST.JValue
 import org.clulab.openie.entities.RuleBasedEntityFinder
+import org.json4s.JsonAST.JValue
 
 import scala.util.{ Failure, Success, Try }
 
