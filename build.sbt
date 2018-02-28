@@ -16,7 +16,7 @@ lazy val commonScalacOptions = Seq(
 lazy val commonSettings = Seq(
   name := "processors-server",
   organization := "myedibleenso",
-  scalaVersion in ThisBuild := "2.11.11", // avoid warnings when compiling play project with -Ywarn-unused
+  scalaVersion in ThisBuild := "2.12.4", // avoid warnings when compiling play project with -Ywarn-unused
   // we want to use -Ywarn-unused-import most of the time
   scalacOptions ++= commonScalacOptions,
   scalacOptions += "-Ywarn-unused-import",
@@ -123,10 +123,10 @@ lazy val root = (project in file("."))
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 libraryDependencies ++= {
-  val akkaV = "2.5.9"
+  val akkaV = "2.5.10"
   val akkaHTTPV = "10.1.0-RC2"
   val json4sV = "3.5.3"
-  val procV = "6.3.0"
+  val procV = "7.1.0"
 
   Seq(
     "com.typesafe"      % "config"            % "1.3.0",
@@ -150,13 +150,13 @@ libraryDependencies ++= {
     "org.clulab" %% "processors-modelsmain"    % procV,
     "org.clulab" %% "processors-modelscorenlp" % procV,
     // testing
-    "org.specs2"        %% "specs2-core"  % "2.3.11" % "test",
+    "org.specs2"        %% "specs2-core"  % "4.0.3" % "test",
     "com.typesafe.akka" %% "akka-testkit" % akkaV    % "test",
     // logging
-    "ch.qos.logback"             % "logback-classic" % "1.1.7",
-    "com.typesafe.scala-logging" %% "scala-logging"  % "3.4.0",
+    "ch.qos.logback"             % "logback-classic" % "1.2.3",
+    "com.typesafe.scala-logging" %% "scala-logging"  % "3.8.0",
     // testing
-    "org.scalatest" %% "scalatest" % "2.2.6" % Test
+    "org.scalatest" %% "scalatest" % "3.0.5" % Test
   )
 }
 
