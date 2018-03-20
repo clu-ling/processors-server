@@ -9,15 +9,13 @@ import scala.concurrent.duration._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.Materializer
 import processors.{ api, ConverterUtils, ProcessorsBridge }
-import org.clulab.processors
-
 import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.{ jackson, DefaultFormats, JNothing, JValue }
 
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.{ ExecutionContextExecutor, Future }
 import com.typesafe.config.Config
 
 trait Service {
@@ -51,19 +49,27 @@ trait Service {
         // Display version
         path("version") {
           get {
-            val html =
+            val html = Future {
               <html>
                 <body>
-                  <h1><code>processors-server</code> version { utils.projectVersion } ({ utils.commit })</h1>
+                  <h1>
+                    <code>processors-server</code>
+                    version
+                    {utils.projectVersion}
+                    (
+                    {utils.commit}
+                    )</h1>
                 </body>
               </html>
+            }
             complete(html)
           }
         } ~
         // buildInfo
         path("buildinfo") {
           get {
-            complete(api.jsonBuildInfo)
+            val resp = Future { api.jsonBuildInfo }
+            complete(resp)
           }
         } ~
         // Demos
@@ -101,246 +107,342 @@ trait Service {
         post {
           // display version
           path("version") {
-            complete(utils.mkDescription)
+            val resp = Future { utils.mkDescription }
+            complete(resp)
           } ~
             // Handle parsing, etc
             path("api" / "annotate") {
               entity(as[api.TextMessage]) { m =>
-                logger.info(s"Default Processor received POST with text -> ${m.text}")
-                val processorsDoc = ProcessorsBridge.annotate(m.text)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+                val resp = Future {
+                  logger.info(s"Default Processor received POST with text -> ${m.text}")
+                  val processorsDoc = ProcessorsBridge.annotate(m.text)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
               }
             } ~
             // annotate from sentences
             path("api" / "annotate") {
               entity(as[api.SegmentedMessage]) { sm =>
-                logger.info(s"Default Processor received POST with text already split into sentences...")
-                val processorsDoc = ProcessorsBridge.annotate(sm.segments)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+                val resp = Future {
+                  logger.info(s"Default Processor received POST with text already split into sentences...")
+                  val processorsDoc = ProcessorsBridge.annotate(sm.segments)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
               }
             } ~
             path("api" / "clu" / "annotate") {
               entity(as[api.TextMessage]) { m =>
-                logger.info(s"CluProcessor received POST with text -> ${m.text}")
-                val processorsDoc = ProcessorsBridge.annotateWithClu(m.text)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+                val resp = Future {
+                  logger.info(s"CluProcessor received POST with text -> ${m.text}")
+                  val processorsDoc = ProcessorsBridge.annotateWithClu(m.text)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
               }
             } ~
-            path("api" / "fastnlp" / "annotate") {
+            path("api" / "clu" / "stanford" / "annotate") {
               entity(as[api.TextMessage]) { m =>
-                logger.info(s"FastNLPProcessor received POST with text -> ${m.text}")
-                val processorsDoc = ProcessorsBridge.annotateWithFastNLP(m.text)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+                val resp = Future {
+                  logger.info(s"CluProcessorWithStanford received POST with text -> ${m.text}")
+                  val processorsDoc = ProcessorsBridge.annotateWithCluStanford(m.text)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
+              }
+            } ~
+            path("api" / "clu" / "stanford" / "annotate") {
+              entity(as[api.SegmentedMessage]) { sm =>
+                val resp = Future {
+                  logger.info(s"CluProcessorWithStanford received POST with text already segmented into sentences ")
+                  val processorsDoc = ProcessorsBridge.annotateWithCluStanford(sm.segments)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
+              }
+            } ~
+            path("api" / "clu" / "bio" / "annotate") {
+              entity(as[api.TextMessage]) { m =>
+                val resp = Future {
+                  logger.info(s"BioCluProcessor received POST with text -> ${m.text}")
+                  val processorsDoc = ProcessorsBridge.annotateWithCluBio(m.text)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
               }
             } ~
             // annotate from sentences
-            path("api" / "fastnlp" / "annotate") {
+            path("api" / "clu" / "bio" / "annotate") {
               entity(as[api.SegmentedMessage]) { sm =>
-                logger.info(s"FastNLPProcessor received POST with text already segmented into sentences ")
-                val processorsDoc = ProcessorsBridge.annotateWithFastNLP(sm.segments)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+                val resp = Future {
+                  logger.info(s"BioCluProcessor received POST with text already segmented into sentences ")
+                  val processorsDoc = ProcessorsBridge.annotateWithCluBio(sm.segments)
+                  ConverterUtils.toJSON(processorsDoc)
+                }
+                complete(resp)
               }
             } ~
-            path("api" / "bionlp" / "annotate") {
-              entity(as[api.TextMessage]) { m =>
-                logger.info(s"BioNLPProcessor received POST with text -> ${m.text}")
-                val processorsDoc = ProcessorsBridge.annotateWithBioNLP(m.text)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+            // lemmatize
+            path("api" / "clu" / "lemmatize") {
+              entity(as[JValue]) {
+
+                case s: JValue if s \ "words" != JNothing =>
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu lemmatizer")
+                    val lemmatizedSentence = ProcessorsBridge.lemmatize(sentence)
+                    ConverterUtils.toJSON(lemmatizedSentence)
+                  }
+                  complete(resp)
+
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu lemmatizer")
+                    val lemmatizedDoc = ProcessorsBridge.lemmatize(document)
+                    ConverterUtils.toJSON(lemmatizedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
-            // annotate from sentences
-            path("api" / "bionlp" / "annotate") {
-              entity(as[api.SegmentedMessage]) { sm =>
-                logger.info(s"BioNLPProcessor received POST with text already segmented into sentences ")
-                val processorsDoc = ProcessorsBridge.annotateWithBioNLP(sm.segments)
-                val json = ConverterUtils.toJSON(processorsDoc)
-                complete(json)
+            // PoS tag
+            path("api" / "clu" / "tag-parts-of-speech") {
+              entity(as[JValue]) {
+
+                case s: JValue if s \ "words" != JNothing =>
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu PoS tagger")
+                    val taggedSentence = ProcessorsBridge.tag(sentence)
+                    ConverterUtils.toJSON(taggedSentence)
+                  }
+                  complete(resp)
+
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu PoS tagger")
+                    val taggedDoc = ProcessorsBridge.tag(document)
+                    ConverterUtils.toJSON(taggedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
             // chunk
-            path("api" / "fastnlp" / "chunk") {
+            path("api" / "clu" / "chunk") {
               entity(as[JValue]) {
+
                 case s: JValue if s \ "words" != JNothing =>
-                  val sentence = ConverterUtils.toProcessorsSentence(s)
-                  logger.info(s"FastNLP chunker")
-                  val chunkedSentence = ProcessorsBridge.chunkWithFastNLP(sentence)
-                  val json = ConverterUtils.toJSON(chunkedSentence)
-                  complete(json)
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu chunker")
+                    val chunkedSentence = ProcessorsBridge.chunk(sentence)
+                    ConverterUtils.toJSON(chunkedSentence)
+                  }
+                  complete(resp)
+
                 case d: JValue if d \ "sentences" != JNothing =>
-                  val document = ConverterUtils.toProcessorsDocument(d)
-                  logger.info(s"FastNLP chunker")
-                  val chunkedDoc = ProcessorsBridge.chunkWithFastNLP(document)
-                  val json = ConverterUtils.toJSON(chunkedDoc)
-                  complete(json)
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu chunker")
+                    val chunkedDoc = ProcessorsBridge.chunk(document)
+                    ConverterUtils.toJSON(chunkedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
-//            // lemmatize
-//            path("api" / "fastnlp" / "lemmatize") {
-//              entity(as[JValue]) {
-//                case s: JValue if s \ "words" != JNothing =>
-//                  val sentence = ConverterUtils.toProcessorsSentence(s)
-//                  logger.info(s"FastNLP lemmatizer")
-//                  val lemmatizedSentence = ProcessorsBridge.lemmatizeWithFastNLP(sentence)
-//                  val json = ConverterUtils.toJSON(lemmatizedSentence)
-//                  complete(json)
-//                case d: JValue if d \ "sentences" != JNothing =>
-//                  val document = ConverterUtils.toProcessorsDocument(d)
-//                  logger.info(s"FastNLP lemmatizer")
-//                  val lemmatizedDoc = ProcessorsBridge.lemmatizeWithFastNLP(document)
-//                  val json = ConverterUtils.toJSON(lemmatizedDoc)
-//                  complete(json)
-//              }
-//            } ~
-//            // PoS tag
-//            path("api" / "fastnlp" / "tag-parts-of-speech") {
-//              entity(as[JValue]) {
-//                case s: JValue if s \ "words" != JNothing =>
-//                  val sentence = ConverterUtils.toProcessorsSentence(s)
-//                  logger.info(s"FastNLP PoS tagger")
-//                  val taggedSentence = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(sentence)
-//                  val json = ConverterUtils.toJSON(taggedSentence)
-//                  complete(json)
-//                case d: JValue if d \ "sentences" != JNothing =>
-//                  val document = ConverterUtils.toProcessorsDocument(d)
-//                  logger.info(s"FastNLP PoS tagger")
-//                  val taggedDoc = ProcessorsBridge.tagPartsOfSpeechWithFastNLP(document)
-//                  val json = ConverterUtils.toJSON(taggedDoc)
-//                  complete(json)
-//              }
-//            } ~
-            // Handle sentiment analysis of text
-            path("api" / "sentiment" / "corenlp" / "score") {
+            // NER
+            path("api" / "clu" / "ner") {
               entity(as[JValue]) {
-                case tm: JValue if tm \ "text" != JNothing =>
-                  val m = tm.extract[api.TextMessage]
-                  logger.info(s"CoreNLPSentimentAnalyzer received POST with text -> ${m.text}")
-                  val scores = ProcessorsBridge.toSentimentScores(m.text)
-                  complete(scores)
-                // FIXME: this is conflict with sending a Sentence...perhaps rename?
-                case sm: JValue if sm \ "segments" != JNothing =>
-                  val m = sm.extract[api.SegmentedMessage]
-                  logger.info(s"CoreNLPSentimentAnalyzer received POST with ${m.segments.size} sentences")
-                  val scores = ProcessorsBridge.toSentimentScores(m.segments)
-                  complete(scores)
-                // Handle sentiment analysis of a Sentence
+
                 case s: JValue if s \ "words" != JNothing =>
-                  val sentence = ConverterUtils.toProcessorsSentence(s)
-                  logger.info(s"CoreNLPSentimentAnalyzer received POST of Sentence")
-                  val scores = ProcessorsBridge.toSentimentScores(sentence)
-                  complete(scores)
-                // Handle sentiment analysis of a Document
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu ner")
+                    val chunkedSentence = ProcessorsBridge.ner(sentence)
+                    ConverterUtils.toJSON(chunkedSentence)
+                  }
+                  complete(resp)
+
                 case d: JValue if d \ "sentences" != JNothing =>
-                  val document = ConverterUtils.toProcessorsDocument(d)
-                  logger.info(s"CoreNLPSentimentAnalyzer received POST of Document")
-                  val scores = ProcessorsBridge.toSentimentScores(document)
-                  complete(scores)
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu ner")
+                    val chunkedDoc = ProcessorsBridge.ner(document)
+                    ConverterUtils.toJSON(chunkedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
-            // Handle sentiment analysis of a seq of text
-            path("api" / "sentiment" / "corenlp" / "score" / "segmented") {
-              entity(as[api.SegmentedMessage]) { sm =>
-                logger.info(s"CoreNLPSentimentAnalyzer received POST with text already segmented into sentences")
-                val sentences: Seq[String] = sm.segments
-                val scores = ProcessorsBridge.toSentimentScores(sentences)
-                complete(scores)
+            // dependency parsing (universal deps)
+            path("api" / "clu" / "parse" / "universal") {
+              entity(as[JValue]) {
+
+                case s: JValue if s \ "words" != JNothing =>
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu ner")
+                    val chunkedSentence = ProcessorsBridge.parseUniversal(sentence)
+                    ConverterUtils.toJSON(chunkedSentence)
+                  }
+                  complete(resp)
+
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu ner")
+                    val chunkedDoc = ProcessorsBridge.parseUniversal(document)
+                    ConverterUtils.toJSON(chunkedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
-            path("api" / "sentiment" / "corenlp" / "score") {
-              entity(as[JValue]) { json =>
-                val document: processors.Document = ConverterUtils.toProcessorsDocument(json)
-                val scores = ProcessorsBridge.toSentimentScores(document)
-                complete(scores)
+            // dependency parsing (Stanford deps)
+            path("api" / "clu" / "parse" / "stanford") {
+              entity(as[JValue]) {
+
+                case s: JValue if s \ "words" != JNothing =>
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Clu ner")
+                    val chunkedSentence = ProcessorsBridge.parseStanford(sentence)
+                    ConverterUtils.toJSON(chunkedSentence)
+                  }
+                  complete(resp)
+
+                case d: JValue if d \ "sentences" != JNothing =>
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Clu ner")
+                    val chunkedDoc = ProcessorsBridge.parseStanford(document)
+                    ConverterUtils.toJSON(chunkedDoc)
+                  }
+                  complete(resp)
+
               }
             } ~
             // Handle IE with Odin
             path("api" / "odin" / "extract") {
               entity(as[JValue]) {
+
                 case dwu if dwu \ "document" != JNothing && dwu \ "url" != JNothing =>
-                  logger.info(s"Odin endpoint received DocumentWithRulesURL")
-                  val document = ConverterUtils.toProcessorsDocument(dwu \ "document")
-                  val url = (dwu \ "url").extract[String]
-                  val json = ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
-                  complete(json)
+                  val resp = Future {
+                    logger.info(s"Odin endpoint received DocumentWithRulesURL")
+                    val document = ConverterUtils.toProcessorsDocument(dwu \ "document")
+                    val url = (dwu \ "url").extract[String]
+                    ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
+                  }
+                  complete(resp)
+
                 case dwr if dwr \ "document" != JNothing && dwr \ "rules" != JNothing =>
-                  logger.info(s"Odin endpoint received DocumentWithRules")
-                  val document = ConverterUtils.toProcessorsDocument(dwr \ "document")
-                  val rules = (dwr \ "rules").extract[String]
-                  val json = ProcessorsBridge.getMentionsAsJSON(document, rules)
-                  complete(json)
+                  val resp = Future {
+                    logger.info(s"Odin endpoint received DocumentWithRules")
+                    val document = ConverterUtils.toProcessorsDocument(dwr \ "document")
+                    val rules = (dwr \ "rules").extract[String]
+                    ProcessorsBridge.getMentionsAsJSON(document, rules)
+                  }
+                  complete(resp)
+
                 case twr if twr \ "text" != JNothing && twr \ "rules" != JNothing =>
-                  logger.info(s"Odin endpoint received TextWithRules")
-                  val text = (twr \ "text").extract[String]
-                  val rules = (twr \ "rules").extract[String]
-                  val document = ProcessorsBridge.annotateWithFastNLP(text)
-                  val json = ProcessorsBridge.getMentionsAsJSON(document, rules)
-                  complete(json)
+                  val resp = Future {
+                    logger.info(s"Odin endpoint received TextWithRules")
+                    val text = (twr \ "text").extract[String]
+                    val rules = (twr \ "rules").extract[String]
+                    val document = ProcessorsBridge.annotate(text)
+                    ProcessorsBridge.getMentionsAsJSON(document, rules)
+                  }
+                  complete(resp)
+
                 case twu if twu \ "text" != JNothing && twu \ "url" != JNothing =>
-                  logger.info(s"Odin endpoint received TextWithRulesURL")
-                  val text = (twu \ "text").extract[String]
-                  val url = (twu \ "url").extract[String]
-                  val document = ProcessorsBridge.annotateWithFastNLP(text)
-                  val json = ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
-                  complete(json)
+                  val resp = Future {
+                    logger.info(s"Odin endpoint received TextWithRulesURL")
+                    val text = (twu \ "text").extract[String]
+                    val url = (twu \ "url").extract[String]
+                    val document = ProcessorsBridge.annotate(text)
+                    ProcessorsBridge.getMentionsAsJSON(document, ConverterUtils.urlToRules(url))
+                  }
+                  complete(resp)
+
               }
             } ~
             path("api" / "openie" / "entities" / "extract") {
               entity(as[JValue]) {
                 case s: JValue if s \ "words" != JNothing =>
-                  val sentence = ConverterUtils.toProcessorsSentence(s)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractEntities(sentence)
-                  complete(mentions)
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractEntities(sentence)
+                  }
+                  complete(resp)
+
                 case d: JValue if d \ "sentences" != JNothing =>
-                  val document = ConverterUtils.toProcessorsDocument(d)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractEntities(document)
-                  complete(mentions)
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractEntities(document)
+                  }
+                  complete(resp)
+
               }
             } ~
             path("api" / "openie" / "entities" / "base-extract") {
               entity(as[JValue]) {
+
                 case s: JValue if s \ "words" != JNothing =>
-                  val sentence = ConverterUtils.toProcessorsSentence(s)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractBaseEntities(sentence)
-                  complete(mentions)
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractBaseEntities(sentence)
+                  }
+                  complete(resp)
+
                 case d: JValue if d \ "sentences" != JNothing =>
-                  val document = ConverterUtils.toProcessorsDocument(d)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractBaseEntities(document)
-                  complete(mentions)
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractBaseEntities(document)
+                  }
+                  complete(resp)
+
               }
             } ~
             path("api" / "openie" / "entities" / "extract-filter") {
               entity(as[JValue]) {
+
                 case s: JValue if s \ "words" != JNothing =>
-                  val sentence = ConverterUtils.toProcessorsSentence(s)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractAndFilterEntities(sentence)
-                  complete(mentions)
+                  val resp = Future {
+                    val sentence = ConverterUtils.toProcessorsSentence(s)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractAndFilterEntities(sentence)
+                  }
+                  complete(resp)
+
                 case d: JValue if d \ "sentences" != JNothing =>
-                  val document = ConverterUtils.toProcessorsDocument(d)
-                  logger.info(s"Openie Entity Extractor")
-                  val mentions = ProcessorsBridge.extractAndFilterEntities(document)
-                  complete(mentions)
+                  val resp = Future {
+                    val document = ConverterUtils.toProcessorsDocument(d)
+                    logger.info(s"Openie Entity Extractor")
+                    ProcessorsBridge.extractAndFilterEntities(document)
+                  }
+                  complete(resp)
+
               }
-            } ~
-            // shuts down the server
-            path("shutdown") {
-              complete {
-                // complete request and then shut down the server in 1 second
-                in(1.second) {
-                  system.terminate()
-                }
-                "Stopping processors-server..."
-              }
-            }
+            } //~
+//            // shuts down the server
+//            path("shutdown") {
+//              complete {
+//                // complete request and then shut down the server in 1 second
+//                in(1.second) {
+//                  system.terminate()
+//                }
+//                "Stopping processors-server..."
+//              }
+//            }
         }
     }
   }

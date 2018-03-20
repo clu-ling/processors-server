@@ -126,7 +126,7 @@ libraryDependencies ++= {
   val akkaV = "2.5.10"
   val akkaHTTPV = "10.1.0-RC2"
   val json4sV = "3.5.3"
-  val procV = "7.1.0"
+  val procV = "7.2.0"
 
   Seq(
     "com.typesafe"      % "config"            % "1.3.0",
@@ -144,11 +144,9 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-xml"     % akkaHTTPV,
     // processors
     "org.clulab" %% "processors-main"          % procV,
-    "org.clulab" %% "processors-corenlp"       % procV,
     "org.clulab" %% "processors-odin"          % procV,
     "org.clulab" %% "processors-openie"          % procV,
     "org.clulab" %% "processors-modelsmain"    % procV,
-    "org.clulab" %% "processors-modelscorenlp" % procV,
     // testing
     "org.specs2"        %% "specs2-core"  % "4.0.3" % "test",
     "com.typesafe.akka" %% "akka-testkit" % akkaV    % "test",

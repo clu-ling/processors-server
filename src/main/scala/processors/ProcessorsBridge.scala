@@ -1,13 +1,8 @@
 package processors
 
-import _root_.processors.api.SentimentScores
 import org.clulab.odin.{ ExtractorEngine, Mention }
 import org.clulab.processors.{ Document, Processor, Sentence }
-import org.clulab.processors.corenlp.CoreNLPSentimentAnalyzer
-import org.clulab.processors.bionlp.BioNLPProcessor
-import org.clulab.processors.clu.CluProcessor
-import org.clulab.processors.fastnlp.FastNLPProcessor
-import org.clulab.processors.shallownlp.ShallowNLPProcessor
+import org.clulab.processors.clu._
 import org.clulab.openie.entities.RuleBasedEntityFinder
 import org.json4s.JsonAST.JValue
 
@@ -17,92 +12,130 @@ object ProcessorsBridge {
 
   // initialize a processor
   // withDiscourse is disabled to control memory consumption
-  lazy val fastnlp = new FastNLPProcessor(withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
-  lazy val bionlp = new BioNLPProcessor(withChunks = false, withDiscourse = ShallowNLPProcessor.NO_DISCOURSE)
-  lazy val clu = new CluProcessor()
+  lazy val clustanford: Processor = new CluProcessorWithStanford()
+  lazy val clubio: Processor = new BioCluProcessor()
+  lazy val clu: Processor = new CluProcessor()
   lazy val ef = RuleBasedEntityFinder(maxHops = 3)
 
   // fastnlp has an NER component plugged in
-  val defaultProc: Processor = fastnlp
+  val defaultProc: Processor = clu
+
+  def mkDocument(sentence: Sentence): Document = Document(Array(sentence))
 
   /** annotate text */
   def annotate(text: String): Document = toAnnotatedDocument(text, defaultProc)
-  def annotateWithFastNLP(text: String): Document = toAnnotatedDocument(text, fastnlp)
-  def annotateWithBioNLP(text: String): Document = toAnnotatedDocument(text, bionlp)
+  def annotateWithCluStanford(text: String): Document = toAnnotatedDocument(text, clustanford)
+  def annotateWithCluBio(text: String): Document = toAnnotatedDocument(text, clubio)
   def annotateWithClu(text: String): Document = toAnnotatedDocument(text, clu)
 
   /** Avoid sentence splitting */
   def annotate(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, defaultProc)
-  def annotateWithFastNLP(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, fastnlp)
-  def annotateWithBioNLP(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, bionlp)
+  def annotateWithCluStanford(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, clustanford)
+  def annotateWithCluBio(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, clubio)
   def annotateWithClu(sentences: Seq[String]): Document = toAnnotatedDocument(sentences, clu)
   def toAnnotatedDocument(sentences: Seq[String], proc: Processor): Document = proc.annotateFromSentences(sentences, keepText = true)
 
-  /** Generate chunk labels */
-  def chunkWithFastNLP(sentence: Sentence): Sentence = {
-    val words = sentence.words
-    val tags = sentence.tags.get
-    val chunks = fastnlp.chunker.classify(words, tags)
-    sentence.chunks = Some(chunks)
-    sentence
+  def tokenize(text: String): Document = {
+    clu.mkDocument(text, keepText = true)
   }
 
-  def chunkWithFastNLP(doc: Document): Document = {
-    val chunkedSentences = doc.sentences.map(chunkWithFastNLP)
-    Document(sentences = chunkedSentences)
+  def lemmatize(text: String): Document = {
+    val doc = tokenize(text)
+    clu.lemmatize(doc)
+    doc
   }
 
-//  /** Generate lemma labels */
-//  def lemmatizeWithFastNLP(sentence: Sentence): Sentence = {
-//    val doc = Document(sentences = Array(sentence))
-//    val lemmatizedDoc = lemmatizeWithFastNLP(doc)
-//    lemmatizedDoc.sentences.head
-//  }
-//
-//  def lemmatizeWithFastNLP(doc: Document): Document = {
-//    val coreDoc = CoreNLPUtils.mkCoreDocument(doc)
-//    fastnlp.lemmatize(coreDoc)
-//    coreDoc
-//  }
-//
-//  /** Generate PoS labels */
-//  def tagPartsOfSpeechWithFastNLP(sentence: Sentence): Sentence = {
-//    val doc = Document(sentences = Array(sentence))
-//    val taggedDoc = tagPartsOfSpeechWithFastNLP(doc)
-//    taggedDoc.sentences.head
-//  }
-//
-//  def tagPartsOfSpeechWithFastNLP(doc: Document): Document = {
-//    val coreDoc = CoreNLPUtils.mkCoreDocument(doc)
-//    fastnlp.tagPartsOfSpeech(coreDoc)
-//    coreDoc
-//  }
+  def lemmatize(sentence: Sentence): Sentence = {
+    val doc = mkDocument(sentence)
+    val lemmatizedDoc = lemmatize(doc)
+    lemmatizedDoc.sentences.head
+  }
+
+  def lemmatize(doc: Document): Document = {
+    clu.lemmatize(doc)
+    doc
+  }
+
+  def tag(text: String): Document = {
+    val doc = tokenize(text)
+    val lemmatizedDoc = lemmatize(doc)
+    tag(lemmatizedDoc)
+  }
+
+  def tag(sentence: Sentence): Sentence = {
+    // CluProcessor's pos tagger uses lemmas as features
+    val doc = if (sentence.lemmas.isEmpty) lemmatize(mkDocument(sentence)) else mkDocument(sentence)
+    tag(doc).sentences.head
+  }
+
+  def tag(doc: Document): Document = {
+    clu.tagPartsOfSpeech(doc)
+    doc
+  }
+
+  // FIXME: what features does the chunker require?
+  def chunk(text: String): Document = {
+    val doc = clu.mkDocument(text)
+    clu.chunking(doc)
+    doc
+  }
+
+  def chunk(sentence: Sentence): Sentence = {
+    val doc = mkDocument(sentence)
+    val doc2 = chunk(doc)
+    doc2.sentences.head
+  }
+
+  def chunk(doc: Document): Document = {
+    clu.chunking(doc)
+    doc
+  }
+
+  // FIXME: what features does the NER require?
+  def ner(text: String): Document = {
+    val doc = clu.mkDocument(text)
+    clu.recognizeNamedEntities(doc)
+    doc
+  }
+
+  def ner(sentence: Sentence): Sentence = {
+    val doc = mkDocument(sentence)
+    val doc2 = ner(doc)
+    doc2.sentences.head
+  }
+
+  def ner(doc: Document): Document = {
+    clu.recognizeNamedEntities(doc)
+    doc
+  }
+
+  // FIXME: do we need to ensure tags are Penn-style?
+  def parseStanford(sentence: Sentence): Sentence = {
+    val doc = mkDocument(sentence)
+    val parsedDoc = parseStanford(doc)
+    parsedDoc.sentences.head
+  }
+
+  def parseStanford(doc: Document): Document = {
+    clustanford.parse(doc)
+    doc
+  }
+
+  // FIXME: do we need to ensure tags are universal?
+  def parseUniversal(sentence: Sentence): Sentence = {
+    val doc = mkDocument(sentence)
+    val parsedDoc = parseUniversal(doc)
+    parsedDoc.sentences.head
+  }
+
+  def parseUniversal(doc: Document): Document = {
+    clu.parse(doc)
+    doc
+  }
 
   // convert processors document to a json-serializable format
   def toAnnotatedDocument(text: String, proc: Processor): Document = {
     proc.annotate(text, keepText = true)
-  }
-
-  def toSentimentScores(text: String): SentimentScores = {
-    val scores = CoreNLPSentimentAnalyzer.sentiment(text)
-    SentimentScores(scores)
-  }
-
-  /** Get sentiment scores for text already segmented into sentences */
-  def toSentimentScores(sentences: Seq[String]): SentimentScores = {
-    val doc = annotateWithFastNLP(sentences)
-    val scores = CoreNLPSentimentAnalyzer.sentiment(doc)
-    SentimentScores(scores)
-  }
-
-  def toSentimentScores(sentence: Sentence): SentimentScores = {
-    val score = CoreNLPSentimentAnalyzer.sentiment(sentence)
-    SentimentScores(Seq(score))
-  }
-
-  def toSentimentScores(doc: Document): SentimentScores = {
-    val scores = CoreNLPSentimentAnalyzer.sentiment(doc)
-    SentimentScores(scores)
   }
 
   def getMentions(doc: Document, rules: String): Seq[Mention] = {

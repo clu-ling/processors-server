@@ -9,8 +9,6 @@
     <title>processors-server</title>
     <link rel="stylesheet" href="/css/vendor.min.css">
     <link rel="stylesheet" href="/css/app.min.css">
-    <!-- theme -->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
 </head>
 <body>
     <div class="outer container">
@@ -44,23 +42,64 @@
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
         </tr>
         <tr>
-          <td><code>/api/fastnlp/annotate</code></td>
+          <td><code>/api/clu/annotate</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>FastNLPProcessor</code></td>
         </tr>
         <tr>
-          <td><code>/api/bionlp/annotate</code></td>
+          <td><code>/api/clu/bio/annotate</code></td>
           <td><code>POST</code></td>
           <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
           <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
         </tr>
-        <!-- Sentiment -->
+        <!-- tokenize -->
         <tr>
-          <td><code>/api/sentiment/corenlp/score</code></td>
-          <td><code>POST</code></td>
-          <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a>, <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/sentence.json"><code>Sentence</code></a>, or <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text": ""}</code></a></td>
-          <td>Produces a sentiment score for each sentence using <code>FastNLPProcessor</code>.  Responses are of the form <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/scores.json"><code>{"scores": []}<code></a></td>
+            <td><code>/api/clu/tokenize</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- chunk -->
+        <tr>
+            <td><code>/api/clu/chunk</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- tag -->
+        <tr>
+            <td><code>/api/clu/tag-part-of-speech</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- lemmatize -->
+        <tr>
+            <td><code>/api/clu/lemmatize</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- ner -->
+        <tr>
+            <td><code>/api/clu/ner</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <!-- parse -->
+        <tr>
+            <td><code>/api/clu/parse/universal</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
+        </tr>
+        <tr>
+            <td><code>/api/clu/parse/stanford</code></td>
+            <td><code>POST</code></td>
+            <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
+            <td>Produces a <a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/document.json"><code>Document</code></a> using <code>BioNLPProcessor</code></td>
         </tr>
         <!-- Odin -->
         <tr>
@@ -96,13 +135,13 @@
             <td><a href="https://github.com/myedibleenso/processors-server/blob/master/src/main/resources/json/schema/message.json"><code>{"text":""}</code></a></td>
             <td>Responses are of the form <code>{"mentions": []}</code></td>
         </tr>
-        <!-- Other -->
-        <tr>
-          <td><code>/shutdown</code></td>
-          <td><code>POST</code></td>
-          <td></td>
-          <td>Any <code>POST</code> to this endpoint will shutdown the server.</td>
-        </tr>
+        <!--&lt;!&ndash; Other &ndash;&gt;-->
+        <!--<tr>-->
+          <!--<td><code>/shutdown</code></td>-->
+          <!--<td><code>POST</code></td>-->
+          <!--<td></td>-->
+          <!--<td>Any <code>POST</code> to this endpoint will shutdown the server.</td>-->
+        <!--</tr>-->
       </tbody>
     </table>
 
