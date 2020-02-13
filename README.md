@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/myedibleenso/processors-server.svg?branch=master)](https://travis-ci.org/myedibleenso/processors-server)
+[![Build Status](https://travis-ci.org/clu-ling/processors-server.svg?branch=master)](https://travis-ci.org/clu-ling/processors-server)
 
 Current version: 3.2.1
 
@@ -19,7 +19,7 @@ This might be useful to people wanting to do NLP in a non-`JVM` language without
 ## Running `processors-server`
 
 ```bash
-git clone https://github.com/myedibleenso/processors-server.git
+git clone https://github.com/clu-ling/processors-server.git
 ```
 
 Fire up the server.  This may take a minute or so to load the large model files.
@@ -41,9 +41,9 @@ sbt "runMain NLPServer --host <your favorite host here> --port <your favorite po
 sbt docker
 ```
 
-This will create a container named `myedibleenso/processors-server:latest`, which you can run with `docker-compose up` using the included `docker-compose.yml` file.
+This will create a container named `parsertongue/processors-server:latest`, which you can run with `docker-compose up` using the included `docker-compose.yml` file.
 
-You can find all of the official containers published on Docker Hub for this project in [this repo](https://hub.docker.com/r/myedibleenso/processors-server/).
+You can find all of the official containers published on Docker Hub for this project in [this repo](https://hub.docker.com/r/parsertongue/processors-server/).
 
 ## Logging
 
@@ -360,7 +360,7 @@ You can shut down the server by posting anything to `/shutdown`
 send a `GET` to `/buildinfo`
 
 # `py-processors`
-If you're a Python user, you may be interested in using [`py-processors`](https://github.com/myedibleenso/py-processors) in your NLP project.
+If you're a Python user, you may be interested in using [`py-processors`](https://github.com/clu-ling/py-processors) in your NLP project.
 
 # Where can I get the latest and greatest fat `jar`?
 Cloning the project and running `sbt jarify` ensures the latest `jar`.  Published jars are available at this URL:  `http://py-processors.parsertongue.com/v?.?.?/processors-server.jar` (substitute your desired version for `?.?.?`).

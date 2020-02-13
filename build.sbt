@@ -15,8 +15,10 @@ lazy val commonScalacOptions = Seq(
 
 lazy val commonSettings = Seq(
   name := "processors-server",
-  organization := "myedibleenso",
-  scalaVersion in ThisBuild := "2.11.11", // avoid warnings when compiling play project with -Ywarn-unused
+  organization := "parsertongue",
+  scalaVersion := "2.11.11",
+  //scalaVersion := "2.12.4",
+  //crossScalaVersions := Seq("2.11.11", "2.12.4"),
   // we want to use -Ywarn-unused-import most of the time
   scalacOptions ++= commonScalacOptions,
   scalacOptions += "-Ywarn-unused-import",
@@ -35,28 +37,31 @@ lazy val dockerSettings = Seq(
     val artifactTargetPath = s"$targetDir/${artifact.name}"
     val productionConf = "production.conf"
     new Dockerfile {
-      from("openjdk:8-jdk")
+      //from("openjdk:8-jdk")
+      from("openjdk")
       add(artifact, artifactTargetPath)
       copy(new File(productionConf), file(s"$targetDir/$productionConf"))
       entryPoint("java", s"-Dconfig.file=$targetDir/$productionConf", "-jar", artifactTargetPath)
     }
   },
-  imageNames in docker := Seq(
-    // sets the latest tag
-    ImageName(
-      namespace = Some(organization.value),
-      repository = name.value,
-      tag = Some("latest")
-    ),
-    // sets a name with a tag that contains the project version
-    ImageName(
-      namespace = Some(organization.value),
-      repository = name.value,
-      tag = Some(version.value)
+  imageNames in docker := {
+    val commit = git.gitHeadCommit.value.getOrElse(s"v${version.value}")
+    Seq(
+      // sets the latest tag
+      ImageName(s"${organization.value}/${name.value}:latest"),
+      // use git hash
+      ImageName(s"${organization.value}/${name.value}:${commit}"),
+      // use processors version
+	  ImageName(s"${organization.value}/${name.value}:processors-${procV}"),
+      // sets a name with a tag that contains the project version
+      ImageName(
+        namespace = Some(organization.value),
+        repository = name.value,
+        tag = Some("v" + version.value)
+      )
     )
+    }  
   )
-)
-
 lazy val assemblySettings = Seq(
   assemblyJarName := { s"processors-server.jar" },
   mainClass in assembly := Some("NLPServer")
@@ -122,11 +127,12 @@ lazy val root = (project in file("."))
 
 resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
+val procV = "6.3.0"
+
 libraryDependencies ++= {
   val akkaV = "2.5.9"
   val akkaHTTPV = "10.1.0-RC2"
   val json4sV = "3.5.3"
-  val procV = "6.3.0"
 
   Seq(
     "com.typesafe"      % "config"            % "1.3.0",
@@ -161,6 +167,7 @@ libraryDependencies ++= {
 }
 
 addCommandAlias("dockerize", ";clean;compile;test;buildFrontend;docker")
+addCommandAlias("dockerizeWebappAndPushToDockerHub", ";clean;compile;test;buildFrontend;docker;dockerPush")
 addCommandAlias("jarify", ";clean;compile;test;buildFrontend;assembly")
 
 lazy val buildFrontend = taskKey[Unit]("Execute frontend scripts")
