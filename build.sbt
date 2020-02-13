@@ -1,3 +1,4 @@
+import scala.sys.process._
 
 lazy val commonScalacOptions = Seq(
   "-feature",
